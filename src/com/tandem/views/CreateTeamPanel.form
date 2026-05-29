@@ -1,0 +1,232 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<Form version="1.3" maxVersion="1.9" type="org.netbeans.modules.form.forminfo.JPanelInfo">
+  <AuxValues>
+    <AuxValue name="FormSettings_autoResourcing" type="int" value="0"/>
+    <AuxValue name="FormSettings_autoSetComponentName" type="boolean" value="false"/>
+    <AuxValue name="FormSettings_generateFQN" type="boolean" value="true"/>
+    <AuxValue name="FormSettings_generateMnemonicsCode" type="boolean" value="false"/>
+    <AuxValue name="FormSettings_i18nAutoMode" type="boolean" value="false"/>
+    <AuxValue name="FormSettings_layoutCodeTarget" type="int" value="2"/>
+    <AuxValue name="FormSettings_listenerGenerationStyle" type="int" value="0"/>
+    <AuxValue name="FormSettings_variablesLocal" type="boolean" value="false"/>
+    <AuxValue name="FormSettings_variablesModifier" type="int" value="2"/>
+  </AuxValues>
+
+  <Layout>
+    <DimensionLayout dim="0">
+      <Group type="103" groupAlignment="0" attributes="0">
+        <Group type="102" attributes="0">
+          <EmptySpace min="-2" pref="28" max="-2" attributes="0"/>
+          <Group type="103" groupAlignment="0" attributes="0">
+            <Component id="backLabel" alignment="0" min="-2" max="-2" attributes="0"/>
+            <Component id="titleLabel" alignment="0" min="-2" max="-2" attributes="0"/>
+            <Component id="subLabel" alignment="0" min="-2" max="-2" attributes="0"/>
+            <Component id="teamNameLabel" alignment="0" min="-2" max="-2" attributes="0"/>
+            <Component id="teamNameField" alignment="0" min="-2" pref="394" max="32767" attributes="0"/>
+            <Component id="descLabel" alignment="0" min="-2" max="-2" attributes="0"/>
+            <Component id="descField" alignment="0" min="-2" pref="394" max="32767" attributes="0"/>
+            <Component id="compNameLabel" alignment="0" min="-2" max="-2" attributes="0"/>
+            <Component id="compNameField" alignment="0" min="-2" pref="394" max="32767" attributes="0"/>
+            <Component id="deadlineLabel" alignment="0" min="-2" max="-2" attributes="0"/>
+            <Component id="deadlineField" alignment="0" min="-2" pref="394" max="32767" attributes="0"/>
+            <Component id="cbHacker" alignment="0" min="-2" max="-2" attributes="0"/>
+            <Component id="cbHipster" alignment="0" min="-2" max="-2" attributes="0"/>
+            <Component id="cbHustler" alignment="0" min="-2" max="-2" attributes="0"/>
+            <Component id="createButton" alignment="0" min="-2" pref="394" max="32767" attributes="0"/>
+          </Group>
+          <EmptySpace min="-2" pref="28" max="-2" attributes="0"/>
+        </Group>
+      </Group>
+    </DimensionLayout>
+    <DimensionLayout dim="1">
+      <Group type="103" groupAlignment="0" attributes="0">
+        <Group type="102" attributes="0">
+          <EmptySpace min="-2" pref="24" max="-2" attributes="0"/>
+          <Component id="backLabel" min="-2" max="-2" attributes="0"/>
+          <EmptySpace min="-2" pref="12" max="-2" attributes="0"/>
+          <Component id="titleLabel" min="-2" max="-2" attributes="0"/>
+          <EmptySpace min="-2" pref="4" max="-2" attributes="0"/>
+          <Component id="subLabel" min="-2" max="-2" attributes="0"/>
+          <EmptySpace min="-2" pref="20" max="-2" attributes="0"/>
+          <Component id="teamNameLabel" min="-2" max="-2" attributes="0"/>
+          <EmptySpace min="-2" pref="8" max="-2" attributes="0"/>
+          <Component id="teamNameField" min="-2" pref="44" max="-2" attributes="0"/>
+          <EmptySpace min="-2" pref="12" max="-2" attributes="0"/>
+          <Component id="descLabel" min="-2" max="-2" attributes="0"/>
+          <EmptySpace min="-2" pref="8" max="-2" attributes="0"/>
+          <Component id="descField" min="-2" pref="44" max="-2" attributes="0"/>
+          <EmptySpace min="-2" pref="20" max="-2" attributes="0"/>
+          <Component id="compNameLabel" min="-2" max="-2" attributes="0"/>
+          <EmptySpace min="-2" pref="8" max="-2" attributes="0"/>
+          <Component id="compNameField" min="-2" pref="44" max="-2" attributes="0"/>
+          <EmptySpace min="-2" pref="12" max="-2" attributes="0"/>
+          <Component id="deadlineLabel" min="-2" max="-2" attributes="0"/>
+          <EmptySpace min="-2" pref="8" max="-2" attributes="0"/>
+          <Component id="deadlineField" min="-2" pref="44" max="-2" attributes="0"/>
+          <EmptySpace min="-2" pref="20" max="-2" attributes="0"/>
+          <Component id="cbHacker" min="-2" max="-2" attributes="0"/>
+          <EmptySpace min="-2" pref="8" max="-2" attributes="0"/>
+          <Component id="cbHipster" min="-2" max="-2" attributes="0"/>
+          <EmptySpace min="-2" pref="8" max="-2" attributes="0"/>
+          <Component id="cbHustler" min="-2" max="-2" attributes="0"/>
+          <EmptySpace min="-2" pref="24" max="-2" attributes="0"/>
+          <Component id="createButton" min="-2" pref="54" max="-2" attributes="0"/>
+          <EmptySpace max="32767" attributes="0"/>
+        </Group>
+      </Group>
+    </DimensionLayout>
+  </Layout>
+
+  <SubComponents>
+    <Component class="javax.swing.JLabel" name="backLabel">
+      <Properties>
+        <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+          <Font name="SansSerif" size="12" style="1"/>
+        </Property>
+        <Property name="foreground" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
+          <Color blue="6b" green="6b" red="6b" type="rgb"/>
+        </Property>
+        <Property name="text" type="java.lang.String" value="&#8592; Back"/>
+        <Property name="cursor" type="java.awt.Cursor" editor="org.netbeans.modules.form.editors2.CursorEditor">
+          <Color id="Hand Cursor"/>
+        </Property>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JLabel" name="titleLabel">
+      <Properties>
+        <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+          <Font name="SansSerif" size="22" style="1"/>
+        </Property>
+        <Property name="foreground" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
+          <Color blue="1a" green="1a" red="1a" type="rgb"/>
+        </Property>
+        <Property name="text" type="java.lang.String" value="Create Team"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JLabel" name="subLabel">
+      <Properties>
+        <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+          <Font name="SansSerif" size="13" style="0"/>
+        </Property>
+        <Property name="foreground" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
+          <Color blue="6b" green="6b" red="6b" type="rgb"/>
+        </Property>
+        <Property name="text" type="java.lang.String" value="Set up your competition team and open skill slots."/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JLabel" name="teamNameLabel">
+      <Properties>
+        <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+          <Font name="SansSerif" size="12" style="1"/>
+        </Property>
+        <Property name="text" type="java.lang.String" value="Team Name"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JTextField" name="teamNameField">
+      <Properties>
+        <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+          <Font name="SansSerif" size="14" style="0"/>
+        </Property>
+        <Property name="preferredSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
+          <Dimension value="[394, 44]"/>
+        </Property>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JLabel" name="descLabel">
+      <Properties>
+        <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+          <Font name="SansSerif" size="12" style="1"/>
+        </Property>
+        <Property name="text" type="java.lang.String" value="Team Description / Concept"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JTextField" name="descField">
+      <Properties>
+        <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+          <Font name="SansSerif" size="14" style="0"/>
+        </Property>
+        <Property name="preferredSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
+          <Dimension value="[394, 44]"/>
+        </Property>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JLabel" name="compNameLabel">
+      <Properties>
+        <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+          <Font name="SansSerif" size="12" style="1"/>
+        </Property>
+        <Property name="text" type="java.lang.String" value="Competition Name"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JTextField" name="compNameField">
+      <Properties>
+        <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+          <Font name="SansSerif" size="14" style="0"/>
+        </Property>
+        <Property name="preferredSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
+          <Dimension value="[394, 44]"/>
+        </Property>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JLabel" name="deadlineLabel">
+      <Properties>
+        <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+          <Font name="SansSerif" size="12" style="1"/>
+        </Property>
+        <Property name="text" type="java.lang.String" value="Deadline (YYYY-MM-DD)"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JTextField" name="deadlineField">
+      <Properties>
+        <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+          <Font name="SansSerif" size="14" style="0"/>
+        </Property>
+        <Property name="preferredSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
+          <Dimension value="[394, 44]"/>
+        </Property>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JCheckBox" name="cbHacker">
+      <Properties>
+        <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+          <Font name="SansSerif" size="14" style="0"/>
+        </Property>
+        <Property name="text" type="java.lang.String" value="Hacker  (Technical/IT)"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JCheckBox" name="cbHipster">
+      <Properties>
+        <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+          <Font name="SansSerif" size="14" style="0"/>
+        </Property>
+        <Property name="text" type="java.lang.String" value="Hipster (UI/UX Design)"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JCheckBox" name="cbHustler">
+      <Properties>
+        <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+          <Font name="SansSerif" size="14" style="0"/>
+        </Property>
+        <Property name="text" type="java.lang.String" value="Hustler (Business/Marketing)"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JButton" name="createButton">
+      <Properties>
+        <Property name="background" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
+          <Color blue="1a" green="1a" red="1a" type="rgb"/>
+        </Property>
+        <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+          <Font name="SansSerif" size="15" style="1"/>
+        </Property>
+        <Property name="foreground" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
+          <Color blue="ff" green="ff" red="ff" type="rgb"/>
+        </Property>
+        <Property name="text" type="java.lang.String" value="Create Team"/>
+        <Property name="preferredSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
+          <Dimension value="[394, 54]"/>
+        </Property>
+      </Properties>
+    </Component>
+  </SubComponents>
+</Form>
