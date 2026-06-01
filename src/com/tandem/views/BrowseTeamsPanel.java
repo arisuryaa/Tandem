@@ -13,8 +13,9 @@ public class BrowseTeamsPanel extends JPanel {
 
     private final MainFrame frame;
     private final TeamController tc = new TeamController();
-    private String activeFilter = "All";
+    private String activeFilter = "Semua";
     private JPanel listPanel;
+    private JPanel filterRow;
 
     public BrowseTeamsPanel(MainFrame frame) {
         this.frame = frame;
@@ -30,29 +31,20 @@ public class BrowseTeamsPanel extends JPanel {
     }
 
     @SuppressWarnings("unchecked")
-    // <editor-fold defaultstate="collapsed" desc="Generated Code">
     private void initComponents() {
-
         mainScrollPane = new javax.swing.JScrollPane();
-
         mainScrollPane.setBorder(null);
         mainScrollPane.setHorizontalScrollBarPolicy(javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
-        layout.setHorizontalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(mainScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 450, Short.MAX_VALUE)
-        );
-        layout.setVerticalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(mainScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 676, Short.MAX_VALUE)
-        );
-    }// </editor-fold>
+        layout.setHorizontalGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(mainScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 450, Short.MAX_VALUE));
+        layout.setVerticalGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(mainScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 676, Short.MAX_VALUE));
+    }
 
-    // Variables declaration - do not modify
     private javax.swing.JScrollPane mainScrollPane;
-    // End of variables declaration
 
     private JPanel buildContent() {
         JPanel p = new JPanel();
@@ -65,20 +57,16 @@ public class BrowseTeamsPanel extends JPanel {
         title.setForeground(UITheme.TEXT);
         title.setAlignmentX(Component.LEFT_ALIGNMENT);
 
-        JLabel sub = new JLabel("Browse open teams looking for your skills.");
+        JLabel sub = new JLabel("Browse open teams looking for members.");
         sub.setFont(UITheme.F_BODY);
         sub.setForeground(UITheme.GRAY);
         sub.setAlignmentX(Component.LEFT_ALIGNMENT);
 
-        // Filter chips row
-        JPanel filterRow = new JPanel(new FlowLayout(FlowLayout.LEFT, 8, 0));
+        filterRow = new JPanel(new FlowLayout(FlowLayout.LEFT, 8, 0));
         filterRow.setOpaque(false);
         filterRow.setAlignmentX(Component.LEFT_ALIGNMENT);
-        for (String f : new String[]{"All", "Hacker", "Hipster", "Hustler"}) {
-            filterRow.add(makeFilterChip(f));
-        }
+        buildFilterChips();
 
-        // Team list panel (will be populated)
         listPanel = new JPanel();
         listPanel.setLayout(new BoxLayout(listPanel, BoxLayout.Y_AXIS));
         listPanel.setOpaque(false);
@@ -104,22 +92,29 @@ public class BrowseTeamsPanel extends JPanel {
         return p;
     }
 
+    private void buildFilterChips() {
+        filterRow.removeAll();
+        ArrayList<String> categories = tc.getAvailableCategories();
+        for (String cat : categories) {
+            filterRow.add(makeFilterChip(cat));
+        }
+        filterRow.revalidate();
+        filterRow.repaint();
+    }
+
     private void populateList() {
         listPanel.removeAll();
         User user = Session.getCurrentUser();
-        ArrayList<Team> teams = activeFilter.equals("All")
-                ? tc.getAllOpenTeams()
-                : tc.getTeamsForRole(activeFilter);
+        ArrayList<Team> teams = tc.getTeamsByCategory(activeFilter);
 
         if (teams.isEmpty()) {
-            JLabel empty = new JLabel("Tidak ada tim yang tersedia untuk filter ini.");
+            JLabel empty = new JLabel("Tidak ada tim yang tersedia untuk kategori ini.");
             empty.setFont(UITheme.F_BODY);
             empty.setForeground(UITheme.GRAY);
             empty.setAlignmentX(Component.LEFT_ALIGNMENT);
             listPanel.add(empty);
         } else {
             for (Team t : teams) {
-                // Don't show teams user already leads or is member of
                 if (!t.isMember(user)) {
                     listPanel.add(makeTeamCard(t));
                     listPanel.add(Box.createVerticalStrut(12));
@@ -159,10 +154,8 @@ public class BrowseTeamsPanel extends JPanel {
             @Override public void mouseClicked(MouseEvent e) {
                 activeFilter = label;
                 active[0] = true;
+                buildFilterChips();
                 populateList();
-                // repaint parent to update all chips
-                Container parent = chip.getParent();
-                if (parent != null) { parent.revalidate(); parent.repaint(); }
             }
         });
         return chip;
@@ -187,7 +180,6 @@ public class BrowseTeamsPanel extends JPanel {
         JLabel compName = smallGray(team.getCompetition().getName());
         compName.setAlignmentX(Component.LEFT_ALIGNMENT);
 
-        // Open slots as mini chips
         JPanel slotsRow = new JPanel(new FlowLayout(FlowLayout.LEFT, 6, 0));
         slotsRow.setOpaque(false);
         slotsRow.setAlignmentX(Component.LEFT_ALIGNMENT);

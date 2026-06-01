@@ -33,7 +33,7 @@ public class Team implements Serializable {
     public void addMember(User user) {
         if (!members.contains(user)) {
             members.add(user);
-            openSlots.remove(user.getRole());
+            if (!openSlots.isEmpty()) openSlots.remove(0);
         }
         if (openSlots.isEmpty()) {
             status = TeamStatus.FULL;

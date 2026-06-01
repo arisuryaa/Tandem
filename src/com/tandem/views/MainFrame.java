@@ -11,31 +11,27 @@ public class MainFrame extends JFrame {
     private final CardLayout cardLayout = new CardLayout();
     private final JPanel cards = new JPanel(cardLayout);
 
-    private DashboardPanel dashboardPanel;
+    private DashboardPanel  dashboardPanel;
     private BrowseTeamsPanel browsePanel;
-    private ProfilePanel profilePanel;
+    private AlertsPanel      alertsPanel;
+    private ProfilePanel     profilePanel;
 
-    private JPanel navPanel; // reference kept for refreshing active state
+    private JPanel navPanel;
 
-    private static final String DASH   = "dashboard";
-    private static final String BROWSE = "browse";
-    private static final String PROF   = "profile";
-    private static final String TEAM   = "teamDetail";
-    private static final String CREATE = "createTeam";
+    private static final String DASH       = "dashboard";
+    private static final String BROWSE     = "browse";
+    private static final String ALERTS     = "alerts";
+    private static final String PROF       = "profile";
+    private static final String TEAM       = "teamDetail";
+    private static final String CREATE     = "createTeam";
+    private static final String EDIT_PROF  = "editProfile";
 
     private static final String[] NAV_LABELS = {"Dashboard", "Find Teams", "Alerts", "Profile"};
 
     public MainFrame() {
         initComponents();
-
-        // Remove design-time placeholder panels so they don't overlay the real UI at runtime
-        getContentPane().remove(mfHeaderPanel);
-        getContentPane().remove(mfContentPanel);
-        getContentPane().remove(mfBottomNavPanel);
-
         setSize(UITheme.W, UITheme.H);
         setLocationRelativeTo(null);
-
         setLayout(new BorderLayout());
         getContentPane().setBackground(UITheme.BG);
 
@@ -44,11 +40,15 @@ public class MainFrame extends JFrame {
         cards.setBackground(UITheme.BG);
         dashboardPanel = new DashboardPanel(this);
         browsePanel    = new BrowseTeamsPanel(this);
+        alertsPanel    = new AlertsPanel(this);
         profilePanel   = new ProfilePanel(this);
-        cards.add(dashboardPanel, DASH);
-        cards.add(browsePanel,    BROWSE);
-        cards.add(profilePanel,   PROF);
+
+        cards.add(dashboardPanel,       DASH);
+        cards.add(browsePanel,          BROWSE);
+        cards.add(alertsPanel,          ALERTS);
+        cards.add(profilePanel,         PROF);
         cards.add(new CreateTeamPanel(this), CREATE);
+
         add(cards, BorderLayout.CENTER);
 
         navPanel = buildBottomNav(0);
@@ -58,7 +58,28 @@ public class MainFrame extends JFrame {
         setVisible(true);
     }
 
-    // ── Navigation methods (called by sub-panels) ─────────────────────────────
+    @SuppressWarnings("unchecked")
+    // <editor-fold defaultstate="collapsed" desc="Generated Code">
+    private void initComponents() {
+        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setTitle("Tandem");
+        setResizable(false);
+
+        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
+        getContentPane().setLayout(layout);
+        layout.setHorizontalGroup(
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 450, Short.MAX_VALUE)
+        );
+        layout.setVerticalGroup(
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 800, Short.MAX_VALUE)
+        );
+
+        pack();
+    }// </editor-fold>
+
+    // ── Navigation ────────────────────────────────────────────────────────────
 
     public void showDashboard() {
         cards.remove(dashboardPanel);
@@ -76,15 +97,12 @@ public class MainFrame extends JFrame {
         switchNav(1);
     }
 
-    public void showTeamDetail(Team team) {
-        TeamDetailPanel tdp = new TeamDetailPanel(this, team);
-        cards.add(tdp, TEAM);
-        cardLayout.show(cards, TEAM);
-    }
-
-    public void showCreateTeam() {
-        cards.add(new CreateTeamPanel(this), CREATE);
-        cardLayout.show(cards, CREATE);
+    public void showAlerts() {
+        cards.remove(alertsPanel);
+        alertsPanel = new AlertsPanel(this);
+        cards.add(alertsPanel, ALERTS);
+        cardLayout.show(cards, ALERTS);
+        switchNav(2);
     }
 
     public void showProfile() {
@@ -93,6 +111,24 @@ public class MainFrame extends JFrame {
         cards.add(profilePanel, PROF);
         cardLayout.show(cards, PROF);
         switchNav(3);
+    }
+
+    public void showTeamDetail(Team team) {
+        TeamDetailPanel tdp = new TeamDetailPanel(this, team);
+        cards.add(tdp, TEAM);
+        cardLayout.show(cards, TEAM);
+    }
+
+    public void showCreateTeam() {
+        CreateTeamPanel ctp = new CreateTeamPanel(this);
+        cards.add(ctp, CREATE);
+        cardLayout.show(cards, CREATE);
+    }
+
+    public void showEditProfile() {
+        EditProfilePanel epp = new EditProfilePanel(this);
+        cards.add(epp, EDIT_PROF);
+        cardLayout.show(cards, EDIT_PROF);
     }
 
     // ── Header ────────────────────────────────────────────────────────────────
@@ -105,6 +141,7 @@ public class MainFrame extends JFrame {
 
         JPanel logoArea = new JPanel(new FlowLayout(FlowLayout.LEFT, UITheme.PAD, 0));
         logoArea.setOpaque(false);
+
         JPanel logoIcon = new JPanel() {
             @Override protected void paintComponent(Graphics g) {
                 Graphics2D g2 = (Graphics2D) g.create();
@@ -117,16 +154,18 @@ public class MainFrame extends JFrame {
         };
         logoIcon.setPreferredSize(new Dimension(30, 24));
         logoIcon.setOpaque(false);
+
         JLabel brandName = new JLabel("Tandem");
         brandName.setFont(UITheme.F_SUB);
         brandName.setForeground(UITheme.TEXT);
+
         logoArea.add(logoIcon);
         logoArea.add(brandName);
         hdr.add(logoArea, BorderLayout.WEST);
         return hdr;
     }
 
-    // ── Bottom navigation ─────────────────────────────────────────────────────
+    // ── Bottom Nav ────────────────────────────────────────────────────────────
 
     private JPanel buildBottomNav(int activeIdx) {
         JPanel nav = new JPanel(new GridLayout(1, 4));
@@ -142,7 +181,7 @@ public class MainFrame extends JFrame {
                     switch (idx) {
                         case 0: showDashboard(); break;
                         case 1: showBrowse();    break;
-                        case 2: showDashboard(); break;
+                        case 2: showAlerts();    break;
                         case 3: showProfile();   break;
                     }
                 }
@@ -169,6 +208,7 @@ public class MainFrame extends JFrame {
 
         JPanel icon = makeNavIcon(iconType, active);
         icon.setAlignmentX(Component.CENTER_ALIGNMENT);
+
         JLabel lbl = new JLabel(label, SwingConstants.CENTER);
         lbl.setFont(UITheme.F_SMALL);
         lbl.setForeground(active ? UITheme.TEXT : UITheme.HINT);
@@ -181,46 +221,6 @@ public class MainFrame extends JFrame {
         item.add(Box.createVerticalGlue());
         return item;
     }
-
-    @SuppressWarnings("unchecked")
-    // <editor-fold defaultstate="collapsed" desc="Generated Code">
-    private void initComponents() {
-
-        mfHeaderPanel    = new javax.swing.JPanel();
-        mfContentPanel   = new javax.swing.JPanel();
-        mfBottomNavPanel = new javax.swing.JPanel();
-
-        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-        setTitle("Tandem");
-        setResizable(false);
-
-        mfHeaderPanel.setBackground(new java.awt.Color(255, 255, 255));
-        mfContentPanel.setBackground(new java.awt.Color(247, 247, 247));
-        mfBottomNavPanel.setBackground(new java.awt.Color(255, 255, 255));
-
-        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
-        getContentPane().setLayout(layout);
-        layout.setHorizontalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(mfHeaderPanel,    javax.swing.GroupLayout.DEFAULT_SIZE, 450, Short.MAX_VALUE)
-            .addComponent(mfContentPanel,   javax.swing.GroupLayout.DEFAULT_SIZE, 450, Short.MAX_VALUE)
-            .addComponent(mfBottomNavPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 450, Short.MAX_VALUE)
-        );
-        layout.setVerticalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addComponent(mfHeaderPanel,    javax.swing.GroupLayout.PREFERRED_SIZE, 56,  javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addComponent(mfContentPanel,   javax.swing.GroupLayout.DEFAULT_SIZE,   676, Short.MAX_VALUE)
-                .addComponent(mfBottomNavPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 68,  javax.swing.GroupLayout.PREFERRED_SIZE))
-        );
-        pack();
-    }// </editor-fold>
-
-    // Variables declaration - do not modify
-    private javax.swing.JPanel mfBottomNavPanel;
-    private javax.swing.JPanel mfContentPanel;
-    private javax.swing.JPanel mfHeaderPanel;
-    // End of variables declaration
 
     private JPanel makeNavIcon(int type, boolean active) {
         Color c = active ? UITheme.TEXT : UITheme.HINT;

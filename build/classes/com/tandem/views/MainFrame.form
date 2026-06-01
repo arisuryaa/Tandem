@@ -24,43 +24,13 @@
   <Layout>
     <DimensionLayout dim="0">
       <Group type="103" groupAlignment="0" attributes="0">
-        <Component id="mfHeaderPanel"    alignment="0" min="0" pref="450" max="32767" attributes="0"/>
-        <Component id="mfContentPanel"   alignment="0" min="0" pref="450" max="32767" attributes="0"/>
-        <Component id="mfBottomNavPanel" alignment="0" min="0" pref="450" max="32767" attributes="0"/>
+        <EmptySpace min="0" pref="450" max="32767" attributes="0"/>
       </Group>
     </DimensionLayout>
     <DimensionLayout dim="1">
       <Group type="103" groupAlignment="0" attributes="0">
-        <Group type="102" attributes="0">
-          <Component id="mfHeaderPanel"    min="-2" pref="56"  max="-2" attributes="0"/>
-          <Component id="mfContentPanel"   min="0"  pref="676" max="32767" attributes="0"/>
-          <Component id="mfBottomNavPanel" min="-2" pref="68"  max="-2" attributes="0"/>
-        </Group>
+        <EmptySpace min="0" pref="800" max="32767" attributes="0"/>
       </Group>
     </DimensionLayout>
   </Layout>
-
-  <SubComponents>
-    <Component class="javax.swing.JPanel" name="mfHeaderPanel">
-      <Properties>
-        <Property name="background" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
-          <Color blue="ff" green="ff" red="ff" type="rgb"/>
-        </Property>
-      </Properties>
-    </Component>
-    <Component class="javax.swing.JPanel" name="mfContentPanel">
-      <Properties>
-        <Property name="background" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
-          <Color blue="f7" green="f7" red="f7" type="rgb"/>
-        </Property>
-      </Properties>
-    </Component>
-    <Component class="javax.swing.JPanel" name="mfBottomNavPanel">
-      <Properties>
-        <Property name="background" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
-          <Color blue="ff" green="ff" red="ff" type="rgb"/>
-        </Property>
-      </Properties>
-    </Component>
-  </SubComponents>
 </Form>

@@ -1,6 +1,6 @@
 package com.tandem.controllers;
 
-import com.tandem.models.*;
+import com.tandem.models.User;
 import com.tandem.services.DataStore;
 import com.tandem.utils.IDGenerator;
 import com.tandem.utils.PasswordUtils;
@@ -11,30 +11,16 @@ public class AuthController {
     private DataStore store = DataStore.getInstance();
 
     public User register(String name, String nim, String email, String rawPassword,
-                         String role, String faculty, String major, String contactNumber) {
+                         String faculty, String major, String contactNumber) {
         if (!Validator.isNotEmpty(name) || !Validator.isNotEmpty(nim)
-                || !Validator.isValidEmail(email) || !Validator.isNotEmpty(rawPassword)
-                || !Validator.isNotEmpty(role)) {
+                || !Validator.isValidEmail(email) || !Validator.isNotEmpty(rawPassword)) {
             return null;
         }
         if (store.emailExists(email)) return null;
 
         String id = IDGenerator.generateId();
         String hashed = PasswordUtils.hash(rawPassword);
-        User user;
-        switch (role) {
-            case "Hacker":
-                user = new Hacker(id, name, nim, email, hashed, faculty, major, contactNumber);
-                break;
-            case "Hipster":
-                user = new Hipster(id, name, nim, email, hashed, faculty, major, contactNumber);
-                break;
-            case "Hustler":
-                user = new Hustler(id, name, nim, email, hashed, faculty, major, contactNumber);
-                break;
-            default:
-                return null;
-        }
+        User user = new User(id, name, nim, email, hashed, faculty, major, contactNumber);
         store.addUser(user);
         return user;
     }

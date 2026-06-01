@@ -13,7 +13,6 @@ public class RequestController {
 
     public JoinRequest sendJoinRequest(User requester, Team team, String message) {
         if (team.isMember(requester) || team.isFull()) return null;
-        if (!team.getOpenSlots().contains(requester.getRole())) return null;
         if (hasPendingRequest(requester, team)) return null;
 
         JoinRequest jr = new JoinRequest(IDGenerator.generateId(), requester, team,

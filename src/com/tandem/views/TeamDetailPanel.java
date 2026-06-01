@@ -119,7 +119,8 @@ public class TeamDetailPanel extends JPanel {
         // Members
         for (User member : team.getMembers()) {
             boolean isThisLeader = member.getUserId().equals(team.getLeader().getUserId());
-            p.add(buildMemberRow(member, isThisLeader ? "Team Lead" : member.getRole()));
+            String label = isThisLeader ? "Team Lead" : member.getMajor();
+            p.add(buildMemberRow(member, label));
             p.add(Box.createVerticalStrut(8));
         }
 
@@ -130,7 +131,7 @@ public class TeamDetailPanel extends JPanel {
         }
 
         // ── Join Request button (for non-members) ─────────────────────────────
-        if (!isLeader && !team.isMember(me) && team.getOpenSlots().contains(me.getRole())) {
+        if (!isLeader && !team.isMember(me) && !team.getOpenSlots().isEmpty()) {
             p.add(Box.createVerticalStrut(16));
             RoundedButton joinBtn;
             boolean alreadyRequested = rc.hasPendingRequest(me, team);
@@ -138,7 +139,7 @@ public class TeamDetailPanel extends JPanel {
                 joinBtn = new RoundedButton("Request Sent ✓", UITheme.BADGE, UITheme.GRAY);
                 joinBtn.setEnabled(false);
             } else {
-                joinBtn = new RoundedButton("Request to Join as " + me.getRole(), UITheme.DARK, Color.WHITE);
+                joinBtn = new RoundedButton("Request to Join", UITheme.DARK, Color.WHITE);
                 joinBtn.addActionListener(e -> sendJoinRequest(me));
             }
             p.add(joinBtn);
@@ -171,7 +172,6 @@ public class TeamDetailPanel extends JPanel {
         card.setLayout(new BoxLayout(card, BoxLayout.Y_AXIS));
         card.setBorder(BorderFactory.createEmptyBorder(16, 16, 16, 16));
         card.setAlignmentX(Component.LEFT_ALIGNMENT);
-        card.setMaximumSize(new Dimension(Integer.MAX_VALUE, 200));
 
         JLabel conceptLabel = new JLabel("THE CONCEPT");
         conceptLabel.setFont(UITheme.F_LABEL);
@@ -196,6 +196,20 @@ public class TeamDetailPanel extends JPanel {
         infoRow.add(infoBlock("COMPETITION", team.getCompetition().getName()));
         infoRow.add(infoBlock("TIMELINE", "Ends " + team.getCompetition().getDeadline()));
 
+        // Tags row
+        JPanel tagsRow = new JPanel(new FlowLayout(FlowLayout.LEFT, 6, 0));
+        tagsRow.setOpaque(false);
+        tagsRow.setAlignmentX(Component.LEFT_ALIGNMENT);
+        for (String tag : team.getCompetition().getTags()) {
+            JLabel tagPill = new JLabel(tag);
+            tagPill.setFont(UITheme.F_SMALL);
+            tagPill.setForeground(UITheme.GRAY);
+            tagPill.setBorder(BorderFactory.createCompoundBorder(
+                    BorderFactory.createLineBorder(UITheme.BORDER),
+                    BorderFactory.createEmptyBorder(2, 8, 2, 8)));
+            tagsRow.add(tagPill);
+        }
+
         card.add(conceptLabel);
         card.add(Box.createVerticalStrut(8));
         card.add(descLabel);
@@ -203,6 +217,10 @@ public class TeamDetailPanel extends JPanel {
         card.add(sep);
         card.add(Box.createVerticalStrut(12));
         card.add(infoRow);
+        if (!team.getCompetition().getTags().isEmpty()) {
+            card.add(Box.createVerticalStrut(10));
+            card.add(tagsRow);
+        }
 
         return card;
     }
@@ -315,7 +333,6 @@ public class TeamDetailPanel extends JPanel {
         card.setLayout(new BoxLayout(card, BoxLayout.Y_AXIS));
         card.setBorder(BorderFactory.createEmptyBorder(16, 16, 16, 16));
         card.setAlignmentX(Component.LEFT_ALIGNMENT);
-        card.setMaximumSize(new Dimension(Integer.MAX_VALUE, 200));
 
         // Header row: avatar + name + time
         JPanel header = new JPanel(new BorderLayout(12, 0));
@@ -327,7 +344,7 @@ public class TeamDetailPanel extends JPanel {
         JLabel rName = new JLabel(jr.getRequester().getName());
         rName.setFont(new Font("SansSerif", Font.BOLD, 14));
         rName.setForeground(UITheme.TEXT);
-        JLabel rRole = new JLabel("Applying as " + jr.getRequester().getRole());
+        JLabel rRole = new JLabel(jr.getRequester().getFaculty() + " · " + jr.getRequester().getMajor());
         rRole.setFont(UITheme.F_SMALL);
         rRole.setForeground(UITheme.GRAY);
         nameBlock.add(rName); nameBlock.add(rRole);

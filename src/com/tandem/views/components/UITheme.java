@@ -29,8 +29,4 @@ public class UITheme {
     public static final int R   = 12;   // corner radius
     public static final int PAD = 28;   // horizontal padding
 
-    // Skills per role
-    public static final String[] HACKER_SKILLS  = {"Java", "Python", "JavaScript", "React.js", "Node.js", "Android", "SQL", "AWS", "ML/AI"};
-    public static final String[] HIPSTER_SKILLS = {"Figma", "Adobe XD", "Illustrator", "Photoshop", "Prototyping", "UX Research", "Sketch"};
-    public static final String[] HUSTLER_SKILLS = {"Market Research", "Pitching", "Business Analysis", "Marketing", "Finance", "Project Mgmt"};
 }

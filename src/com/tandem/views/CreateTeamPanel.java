@@ -2,245 +2,326 @@ package com.tandem.views;
 
 import com.tandem.controllers.TeamController;
 import com.tandem.models.*;
+import com.tandem.services.DataStore;
 import com.tandem.services.Session;
-import com.tandem.views.components.UITheme;
+import com.tandem.views.components.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.util.ArrayList;
 import javax.swing.*;
 
-public class CreateTeamPanel extends javax.swing.JPanel {
+public class CreateTeamPanel extends JPanel {
 
     private final MainFrame frame;
     private final TeamController tc = new TeamController();
-    private JComboBox<String> categoryBox, maxSizeBox;
+    private final DataStore store = DataStore.getInstance();
+
+    // Competition mode
+    private boolean createNewComp = false;
+    private JPanel compSelectPanel;
+    private JPanel compCreatePanel;
+    private JComboBox<String> existingCompBox;
+    private JTextField compNameField, compDeadlineField;
+    private JComboBox<String> compCategoryBox;
+    private JTextField compTagsField;
+
+    // Team fields
+    private JTextField teamNameField, descField;
+    private JPanel slotsContainer;
+    private final ArrayList<JTextField> slotFields = new ArrayList<>();
 
     public CreateTeamPanel(MainFrame frame) {
         this.frame = frame;
-        initComponents();
+        setBackground(UITheme.BG);
+        setLayout(new BorderLayout());
 
-        // Style form fields
-        styleField(teamNameField);
-        styleField(descField);
-        styleField(compNameField);
-        styleField(deadlineField);
+        JScrollPane scroll = new JScrollPane(buildContent());
+        scroll.setBorder(null);
+        scroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+        scroll.getViewport().setBackground(UITheme.BG);
+        add(scroll, BorderLayout.CENTER);
+    }
 
-        // Category + MaxSize rows added programmatically below checkboxes area
-        String[] categories = {"Hackathon", "Business", "Scientific", "Design", "Other"};
-        String[] sizes      = {"2", "3", "4", "5", "6"};
-        categoryBox = new JComboBox<>(categories);
-        maxSizeBox  = new JComboBox<>(sizes);
-        categoryBox.setFont(UITheme.F_BODY);
-        maxSizeBox.setFont(UITheme.F_BODY);
-        maxSizeBox.setSelectedIndex(1);
+    private JPanel buildContent() {
+        JPanel p = new JPanel();
+        p.setLayout(new BoxLayout(p, BoxLayout.Y_AXIS));
+        p.setBackground(UITheme.BG);
+        p.setBorder(BorderFactory.createEmptyBorder(20, UITheme.PAD, 32, UITheme.PAD));
 
-        // Disable user's own role
-        User me = Session.getCurrentUser();
-        if (me.getRole().equals("Hacker"))  { cbHacker.setEnabled(false); cbHacker.setSelected(false); }
-        if (me.getRole().equals("Hipster")) { cbHipster.setEnabled(false); cbHipster.setSelected(false); }
-        if (me.getRole().equals("Hustler")) { cbHustler.setEnabled(false); cbHustler.setSelected(false); }
-
-        backLabel.addMouseListener(new MouseAdapter() {
+        // Back
+        JLabel back = new JLabel("← Back");
+        back.setFont(UITheme.F_LABEL);
+        back.setForeground(UITheme.GRAY);
+        back.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        back.setAlignmentX(Component.LEFT_ALIGNMENT);
+        back.addMouseListener(new MouseAdapter() {
             @Override public void mouseClicked(MouseEvent e) { frame.showDashboard(); }
         });
 
-        createButton.addActionListener(e -> doCreate(me));
+        JLabel title = new JLabel("Create Team");
+        title.setFont(UITheme.F_TITLE);
+        title.setForeground(UITheme.TEXT);
+        title.setAlignmentX(Component.LEFT_ALIGNMENT);
+
+        JLabel sub = new JLabel("Set up your competition team and open positions.");
+        sub.setFont(UITheme.F_BODY);
+        sub.setForeground(UITheme.GRAY);
+        sub.setAlignmentX(Component.LEFT_ALIGNMENT);
+
+        // Team name
+        teamNameField = styledField();
+        // Description
+        descField = styledField();
+
+        // Competition selection
+        JLabel compLabel = sectionLabel("Kompetisi");
+        JLabel compSub = smallGray("Pilih kompetisi yang sudah ada atau buat baru.");
+
+        // Toggle buttons
+        JPanel modeRow = new JPanel(new FlowLayout(FlowLayout.LEFT, 8, 0));
+        modeRow.setOpaque(false);
+        modeRow.setAlignmentX(Component.LEFT_ALIGNMENT);
+        JToggleButton btnExisting = new JToggleButton("Pilih yang ada");
+        JToggleButton btnNew = new JToggleButton("Buat baru");
+        styleToggle(btnExisting, true);
+        styleToggle(btnNew, false);
+
+        ButtonGroup bg = new ButtonGroup();
+        bg.add(btnExisting); bg.add(btnNew);
+        btnExisting.setSelected(true);
+
+        modeRow.add(btnExisting);
+        modeRow.add(btnNew);
+
+        // Panel: pilih kompetisi existing
+        compSelectPanel = buildExistingCompPanel();
+        compSelectPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
+
+        // Panel: buat kompetisi baru
+        compCreatePanel = buildNewCompPanel();
+        compCreatePanel.setAlignmentX(Component.LEFT_ALIGNMENT);
+        compCreatePanel.setVisible(false);
+
+        btnExisting.addActionListener(e -> {
+            createNewComp = false;
+            compSelectPanel.setVisible(true);
+            compCreatePanel.setVisible(false);
+            styleToggle(btnExisting, true);
+            styleToggle(btnNew, false);
+        });
+        btnNew.addActionListener(e -> {
+            createNewComp = true;
+            compSelectPanel.setVisible(false);
+            compCreatePanel.setVisible(true);
+            styleToggle(btnExisting, false);
+            styleToggle(btnNew, true);
+        });
+
+        // Open slots
+        JLabel slotsLabel = sectionLabel("Open Slots yang Dibutuhkan");
+        JLabel slotsSub = smallGray("Deskripsikan posisi yang kamu butuhkan dari anggota.");
+
+        slotsContainer = new JPanel();
+        slotsContainer.setLayout(new BoxLayout(slotsContainer, BoxLayout.Y_AXIS));
+        slotsContainer.setOpaque(false);
+        slotsContainer.setAlignmentX(Component.LEFT_ALIGNMENT);
+        addSlotField();
+
+        RoundedButton addSlotBtn = new RoundedButton("+ Tambah Slot", UITheme.BADGE, UITheme.TEXT);
+        addSlotBtn.setAlignmentX(Component.LEFT_ALIGNMENT);
+        addSlotBtn.addActionListener(e -> {
+            addSlotField();
+            revalidate(); repaint();
+        });
+
+        // Create button
+        RoundedButton createBtn = new RoundedButton("Buat Tim", UITheme.DARK, Color.WHITE);
+        createBtn.addActionListener(e -> doCreate());
+
+        p.add(back);
+        p.add(Box.createVerticalStrut(12));
+        p.add(title);
+        p.add(Box.createVerticalStrut(4));
+        p.add(sub);
+        p.add(Box.createVerticalStrut(24));
+        p.add(sectionLabel("Nama Tim"));      p.add(Box.createVerticalStrut(8)); p.add(teamNameField);
+        p.add(Box.createVerticalStrut(16));
+        p.add(sectionLabel("Deskripsi Tim")); p.add(Box.createVerticalStrut(8)); p.add(descField);
+        p.add(Box.createVerticalStrut(24));
+        p.add(compLabel);
+        p.add(Box.createVerticalStrut(4));
+        p.add(compSub);
+        p.add(Box.createVerticalStrut(12));
+        p.add(modeRow);
+        p.add(Box.createVerticalStrut(12));
+        p.add(compSelectPanel);
+        p.add(compCreatePanel);
+        p.add(Box.createVerticalStrut(24));
+        p.add(slotsLabel);
+        p.add(Box.createVerticalStrut(4));
+        p.add(slotsSub);
+        p.add(Box.createVerticalStrut(12));
+        p.add(slotsContainer);
+        p.add(Box.createVerticalStrut(8));
+        p.add(addSlotBtn);
+        p.add(Box.createVerticalStrut(32));
+        p.add(createBtn);
+
+        return p;
     }
 
-    private void styleField(JTextField f) {
-        f.setBackground(UITheme.CARD);
-        f.setBorder(BorderFactory.createCompoundBorder(
-            BorderFactory.createLineBorder(UITheme.BORDER),
-            BorderFactory.createEmptyBorder(0, 12, 0, 12)));
+    private JPanel buildExistingCompPanel() {
+        JPanel panel = new JPanel(new BorderLayout(0, 6));
+        panel.setOpaque(false);
+        panel.setMaximumSize(new Dimension(Integer.MAX_VALUE, 70));
+
+        ArrayList<Competition> comps = store.getAllCompetitions();
+        String[] names = new String[comps.size()];
+        for (int i = 0; i < comps.size(); i++) {
+            names[i] = comps.get(i).getName() + " [" + comps.get(i).getCategory() + "]";
+        }
+        existingCompBox = new JComboBox<>(names.length > 0 ? names : new String[]{"Belum ada kompetisi"});
+        existingCompBox.setFont(UITheme.F_BODY);
+        existingCompBox.setBackground(UITheme.CARD);
+
+        panel.add(existingCompBox, BorderLayout.CENTER);
+        return panel;
     }
 
-    private void doCreate(User leader) {
+    private JPanel buildNewCompPanel() {
+        JPanel panel = new JPanel();
+        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+        panel.setOpaque(false);
+
+        compNameField     = styledField();
+        compDeadlineField = styledField();
+        compDeadlineField.setText("YYYY-MM-DD");
+
+        String[] categories = {"Hackathon", "Design", "PKM", "Business", "Data Science", "Other"};
+        compCategoryBox = new JComboBox<>(categories);
+        compCategoryBox.setFont(UITheme.F_BODY);
+        compCategoryBox.setBackground(UITheme.CARD);
+        compCategoryBox.setMaximumSize(new Dimension(Integer.MAX_VALUE, 44));
+        compCategoryBox.setAlignmentX(Component.LEFT_ALIGNMENT);
+
+        compTagsField = styledField();
+        compTagsField.setText("e.g. Informatika, Manajemen, DKV");
+
+        panel.add(smallGray("Nama Kompetisi")); panel.add(Box.createVerticalStrut(6)); panel.add(compNameField);
+        panel.add(Box.createVerticalStrut(12));
+        panel.add(smallGray("Kategori")); panel.add(Box.createVerticalStrut(6)); panel.add(compCategoryBox);
+        panel.add(Box.createVerticalStrut(12));
+        panel.add(smallGray("Deadline")); panel.add(Box.createVerticalStrut(6)); panel.add(compDeadlineField);
+        panel.add(Box.createVerticalStrut(12));
+        panel.add(smallGray("Tags Jurusan (pisah dengan koma)")); panel.add(Box.createVerticalStrut(6)); panel.add(compTagsField);
+
+        return panel;
+    }
+
+    private void addSlotField() {
+        JTextField field = styledField();
+        field.setText("e.g. Desainer UI");
+        field.setMaximumSize(new Dimension(Integer.MAX_VALUE, 44));
+        slotFields.add(field);
+        slotsContainer.add(field);
+        slotsContainer.add(Box.createVerticalStrut(8));
+    }
+
+    private void doCreate() {
+        User leader = Session.getCurrentUser();
         String tName = teamNameField.getText().trim();
         String desc  = descField.getText().trim();
-        String cName = compNameField.getText().trim();
-        String dead  = deadlineField.getText().trim();
 
-        if (tName.isEmpty() || cName.isEmpty() || dead.isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Team name, competition name, dan deadline wajib diisi!",
-                    "Validasi", JOptionPane.WARNING_MESSAGE);
-            return;
+        if (tName.isEmpty()) {
+            warn("Nama tim wajib diisi!"); return;
         }
 
+        // Build slots
         ArrayList<String> slots = new ArrayList<>();
-        if (cbHacker.isSelected()  && cbHacker.isEnabled())  slots.add("Hacker");
-        if (cbHipster.isSelected() && cbHipster.isEnabled()) slots.add("Hipster");
-        if (cbHustler.isSelected() && cbHustler.isEnabled()) slots.add("Hustler");
-
+        for (JTextField sf : slotFields) {
+            String slot = sf.getText().trim();
+            if (!slot.isEmpty() && !slot.equals("e.g. Desainer UI")) slots.add(slot);
+        }
         if (slots.isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Pilih minimal satu open slot!",
-                    "Validasi", JOptionPane.WARNING_MESSAGE);
-            return;
+            warn("Tambahkan minimal satu open slot!"); return;
         }
 
-        String cat  = (String) categoryBox.getSelectedItem();
-        int maxSize = Integer.parseInt((String) maxSizeBox.getSelectedItem());
-        Competition comp = new Competition(
-                java.util.UUID.randomUUID().toString().substring(0, 6).toUpperCase(),
-                cName, cat, dead, maxSize);
+        // Build competition
+        Competition comp;
+        ArrayList<Competition> allComps = store.getAllCompetitions();
+
+        if (!createNewComp) {
+            if (allComps.isEmpty()) {
+                warn("Tidak ada kompetisi tersedia. Buat kompetisi baru."); return;
+            }
+            int idx = existingCompBox.getSelectedIndex();
+            comp = allComps.get(idx);
+        } else {
+            String cName = compNameField.getText().trim();
+            String cDead = compDeadlineField.getText().trim();
+            String cCat  = (String) compCategoryBox.getSelectedItem();
+
+            if (cName.isEmpty() || cDead.isEmpty()) {
+                warn("Nama dan deadline kompetisi wajib diisi!"); return;
+            }
+
+            ArrayList<String> tags = new ArrayList<>();
+            for (String tag : compTagsField.getText().split(",")) {
+                String t = tag.trim();
+                if (!t.isEmpty()) tags.add(t);
+            }
+            if (tags.isEmpty()) tags.add("Semua");
+
+            comp = new Competition(
+                    java.util.UUID.randomUUID().toString().substring(0, 8).toUpperCase(),
+                    cName, cCat, cDead, slots.size() + 1, tags);
+        }
 
         tc.createTeam(leader, tName, desc, comp, slots);
         JOptionPane.showMessageDialog(this, "Tim \"" + tName + "\" berhasil dibuat!");
         frame.showDashboard();
     }
 
-    @SuppressWarnings("unchecked")
-    // <editor-fold defaultstate="collapsed" desc="Generated Code">
-    private void initComponents() {
+    private JTextField styledField() {
+        JTextField f = new JTextField();
+        f.setFont(UITheme.F_BODY);
+        f.setBackground(UITheme.CARD);
+        f.setPreferredSize(new Dimension(0, 44));
+        f.setMaximumSize(new Dimension(Integer.MAX_VALUE, 44));
+        f.setAlignmentX(Component.LEFT_ALIGNMENT);
+        f.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createLineBorder(UITheme.BORDER),
+                BorderFactory.createEmptyBorder(0, 12, 0, 12)));
+        return f;
+    }
 
-        backLabel = new javax.swing.JLabel();
-        titleLabel = new javax.swing.JLabel();
-        subLabel = new javax.swing.JLabel();
-        teamNameLabel = new javax.swing.JLabel();
-        teamNameField = new javax.swing.JTextField();
-        descLabel = new javax.swing.JLabel();
-        descField = new javax.swing.JTextField();
-        compNameLabel = new javax.swing.JLabel();
-        compNameField = new javax.swing.JTextField();
-        deadlineLabel = new javax.swing.JLabel();
-        deadlineField = new javax.swing.JTextField();
-        cbHacker = new javax.swing.JCheckBox();
-        cbHipster = new javax.swing.JCheckBox();
-        cbHustler = new javax.swing.JCheckBox();
-        createButton = new javax.swing.JButton();
+    private void styleToggle(JToggleButton btn, boolean active) {
+        btn.setFont(UITheme.F_SMALL);
+        btn.setBackground(active ? UITheme.DARK : UITheme.CARD);
+        btn.setForeground(active ? Color.WHITE : UITheme.TEXT);
+        btn.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createLineBorder(active ? UITheme.DARK : UITheme.BORDER),
+                BorderFactory.createEmptyBorder(6, 14, 6, 14)));
+        btn.setFocusPainted(false);
+    }
 
-        setBackground(new java.awt.Color(247, 247, 247));
+    private JLabel sectionLabel(String text) {
+        JLabel l = new JLabel(text);
+        l.setFont(UITheme.F_LABEL);
+        l.setForeground(UITheme.TEXT);
+        l.setAlignmentX(Component.LEFT_ALIGNMENT);
+        return l;
+    }
 
-        backLabel.setFont(new java.awt.Font("SansSerif", 1, 12));
-        backLabel.setForeground(new java.awt.Color(107, 107, 107));
-        backLabel.setText("← Back");
-        backLabel.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+    private JLabel smallGray(String text) {
+        JLabel l = new JLabel(text);
+        l.setFont(UITheme.F_SMALL);
+        l.setForeground(UITheme.GRAY);
+        l.setAlignmentX(Component.LEFT_ALIGNMENT);
+        return l;
+    }
 
-        titleLabel.setFont(new java.awt.Font("SansSerif", 1, 22));
-        titleLabel.setForeground(new java.awt.Color(26, 26, 26));
-        titleLabel.setText("Create Team");
-
-        subLabel.setFont(new java.awt.Font("SansSerif", 0, 13));
-        subLabel.setForeground(new java.awt.Color(107, 107, 107));
-        subLabel.setText("Set up your competition team and open skill slots.");
-
-        teamNameLabel.setFont(new java.awt.Font("SansSerif", 1, 12));
-        teamNameLabel.setText("Team Name");
-
-        teamNameField.setFont(new java.awt.Font("SansSerif", 0, 14));
-        teamNameField.setPreferredSize(new java.awt.Dimension(394, 44));
-
-        descLabel.setFont(new java.awt.Font("SansSerif", 1, 12));
-        descLabel.setText("Team Description / Concept");
-
-        descField.setFont(new java.awt.Font("SansSerif", 0, 14));
-        descField.setPreferredSize(new java.awt.Dimension(394, 44));
-
-        compNameLabel.setFont(new java.awt.Font("SansSerif", 1, 12));
-        compNameLabel.setText("Competition Name");
-
-        compNameField.setFont(new java.awt.Font("SansSerif", 0, 14));
-        compNameField.setPreferredSize(new java.awt.Dimension(394, 44));
-
-        deadlineLabel.setFont(new java.awt.Font("SansSerif", 1, 12));
-        deadlineLabel.setText("Deadline (YYYY-MM-DD)");
-
-        deadlineField.setFont(new java.awt.Font("SansSerif", 0, 14));
-        deadlineField.setPreferredSize(new java.awt.Dimension(394, 44));
-
-        cbHacker.setBackground(new java.awt.Color(247, 247, 247));
-        cbHacker.setFont(new java.awt.Font("SansSerif", 0, 14));
-        cbHacker.setText("Hacker  (Technical/IT)");
-
-        cbHipster.setBackground(new java.awt.Color(247, 247, 247));
-        cbHipster.setFont(new java.awt.Font("SansSerif", 0, 14));
-        cbHipster.setText("Hipster (UI/UX Design)");
-
-        cbHustler.setBackground(new java.awt.Color(247, 247, 247));
-        cbHustler.setFont(new java.awt.Font("SansSerif", 0, 14));
-        cbHustler.setText("Hustler (Business/Marketing)");
-
-        createButton.setBackground(new java.awt.Color(26, 26, 26));
-        createButton.setFont(new java.awt.Font("SansSerif", 1, 15));
-        createButton.setForeground(java.awt.Color.white);
-        createButton.setText("Create Team");
-        createButton.setPreferredSize(new java.awt.Dimension(394, 54));
-
-        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
-        this.setLayout(layout);
-        layout.setHorizontalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addGap(28, 28, 28)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(backLabel)
-                    .addComponent(titleLabel)
-                    .addComponent(subLabel)
-                    .addComponent(teamNameLabel)
-                    .addComponent(teamNameField, javax.swing.GroupLayout.DEFAULT_SIZE, 394, Short.MAX_VALUE)
-                    .addComponent(descLabel)
-                    .addComponent(descField, javax.swing.GroupLayout.DEFAULT_SIZE, 394, Short.MAX_VALUE)
-                    .addComponent(compNameLabel)
-                    .addComponent(compNameField, javax.swing.GroupLayout.DEFAULT_SIZE, 394, Short.MAX_VALUE)
-                    .addComponent(deadlineLabel)
-                    .addComponent(deadlineField, javax.swing.GroupLayout.DEFAULT_SIZE, 394, Short.MAX_VALUE)
-                    .addComponent(cbHacker)
-                    .addComponent(cbHipster)
-                    .addComponent(cbHustler)
-                    .addComponent(createButton, javax.swing.GroupLayout.DEFAULT_SIZE, 394, Short.MAX_VALUE))
-                .addGap(28, 28, 28))
-        );
-        layout.setVerticalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addGap(24, 24, 24)
-                .addComponent(backLabel)
-                .addGap(12, 12, 12)
-                .addComponent(titleLabel)
-                .addGap(4, 4, 4)
-                .addComponent(subLabel)
-                .addGap(20, 20, 20)
-                .addComponent(teamNameLabel)
-                .addGap(8, 8, 8)
-                .addComponent(teamNameField, javax.swing.GroupLayout.PREFERRED_SIZE, 44, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(12, 12, 12)
-                .addComponent(descLabel)
-                .addGap(8, 8, 8)
-                .addComponent(descField, javax.swing.GroupLayout.PREFERRED_SIZE, 44, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(20, 20, 20)
-                .addComponent(compNameLabel)
-                .addGap(8, 8, 8)
-                .addComponent(compNameField, javax.swing.GroupLayout.PREFERRED_SIZE, 44, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(12, 12, 12)
-                .addComponent(deadlineLabel)
-                .addGap(8, 8, 8)
-                .addComponent(deadlineField, javax.swing.GroupLayout.PREFERRED_SIZE, 44, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(20, 20, 20)
-                .addComponent(cbHacker)
-                .addGap(8, 8, 8)
-                .addComponent(cbHipster)
-                .addGap(8, 8, 8)
-                .addComponent(cbHustler)
-                .addGap(24, 24, 24)
-                .addComponent(createButton, javax.swing.GroupLayout.PREFERRED_SIZE, 54, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-        );
-    }// </editor-fold>
-
-    // Variables declaration - do not modify
-    private javax.swing.JLabel backLabel;
-    private javax.swing.JCheckBox cbHacker;
-    private javax.swing.JCheckBox cbHipster;
-    private javax.swing.JCheckBox cbHustler;
-    private javax.swing.JTextField compNameField;
-    private javax.swing.JLabel compNameLabel;
-    private javax.swing.JButton createButton;
-    private javax.swing.JTextField deadlineField;
-    private javax.swing.JLabel deadlineLabel;
-    private javax.swing.JTextField descField;
-    private javax.swing.JLabel descLabel;
-    private javax.swing.JLabel subLabel;
-    private javax.swing.JTextField teamNameField;
-    private javax.swing.JLabel teamNameLabel;
-    private javax.swing.JLabel titleLabel;
-    // End of variables declaration
+    private void warn(String msg) {
+        JOptionPane.showMessageDialog(this, msg, "Validasi", JOptionPane.WARNING_MESSAGE);
+    }
 }

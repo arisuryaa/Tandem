@@ -28,29 +28,20 @@ public class DashboardPanel extends JPanel {
     }
 
     @SuppressWarnings("unchecked")
-    // <editor-fold defaultstate="collapsed" desc="Generated Code">
     private void initComponents() {
-
         mainScrollPane = new javax.swing.JScrollPane();
-
         mainScrollPane.setBorder(null);
         mainScrollPane.setHorizontalScrollBarPolicy(javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
-        layout.setHorizontalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(mainScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 450, Short.MAX_VALUE)
-        );
-        layout.setVerticalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(mainScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 676, Short.MAX_VALUE)
-        );
-    }// </editor-fold>
+        layout.setHorizontalGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(mainScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 450, Short.MAX_VALUE));
+        layout.setVerticalGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(mainScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 676, Short.MAX_VALUE));
+    }
 
-    // Variables declaration - do not modify
     private javax.swing.JScrollPane mainScrollPane;
-    // End of variables declaration
 
     private JPanel buildContent() {
         User user = Session.getCurrentUser();
@@ -70,32 +61,55 @@ public class DashboardPanel extends JPanel {
         sub.setForeground(UITheme.GRAY);
         sub.setAlignmentX(Component.LEFT_ALIGNMENT);
 
-        // Role badge
-        JPanel roleBadge = makeBadge(user.getRole());
-        roleBadge.setAlignmentX(Component.LEFT_ALIGNMENT);
+        // Academic badge (fakultas · jurusan)
+        JPanel acadBadge = makeBadge(user.getFaculty() + "  ·  " + user.getMajor());
+        acadBadge.setAlignmentX(Component.LEFT_ALIGNMENT);
 
         // Create team button
-        RoundedButton createBtn = new RoundedButton("+ Create New Team", UITheme.DARK, Color.WHITE);
+        RoundedButton createBtn = new RoundedButton("+ Buat Tim Baru", UITheme.DARK, Color.WHITE);
         createBtn.addActionListener(e -> frame.showCreateTeam());
 
         p.add(greet);
         p.add(Box.createVerticalStrut(4));
         p.add(sub);
         p.add(Box.createVerticalStrut(12));
-        p.add(roleBadge);
+        p.add(acadBadge);
         p.add(Box.createVerticalStrut(28));
 
-        // Section: My Teams
-        JLabel myTeamsLabel = sectionHead("My Teams");
-        p.add(myTeamsLabel);
+        // Section: Rekomendasi
+        p.add(sectionHead("Rekomendasi untuk Kamu"));
+        p.add(Box.createVerticalStrut(4));
+        JLabel recSub = new JLabel("Tim yang butuh profil jurusanmu");
+        recSub.setFont(UITheme.F_SMALL);
+        recSub.setForeground(UITheme.GRAY);
+        recSub.setAlignmentX(Component.LEFT_ALIGNMENT);
+        p.add(recSub);
+        p.add(Box.createVerticalStrut(12));
+
+        ArrayList<Team> recommended = tc.getRecommendedTeams(user);
+        if (recommended.isEmpty()) {
+            p.add(emptyState("Belum ada tim yang cocok dengan jurusanmu.",
+                             "Coba cari tim atau buat tim baru!"));
+        } else {
+            for (Team t : recommended) {
+                p.add(makeTeamCard(t, true));
+                p.add(Box.createVerticalStrut(12));
+            }
+        }
+
+        p.add(Box.createVerticalStrut(28));
+
+        // Section: Tim Saya
+        p.add(sectionHead("Tim Saya"));
         p.add(Box.createVerticalStrut(12));
 
         ArrayList<Team> myTeams = tc.getTeamsByMember(user);
         if (myTeams.isEmpty()) {
-            p.add(emptyState("Kamu belum bergabung di tim manapun.", "Cari tim atau buat tim baru!"));
+            p.add(emptyState("Kamu belum bergabung di tim manapun.",
+                             "Cari tim atau buat tim baru!"));
         } else {
             for (Team t : myTeams) {
-                p.add(makeTeamCard(t));
+                p.add(makeTeamCard(t, false));
                 p.add(Box.createVerticalStrut(12));
             }
         }
@@ -107,17 +121,20 @@ public class DashboardPanel extends JPanel {
         return p;
     }
 
-    private JPanel makeTeamCard(Team team) {
+    private JPanel makeTeamCard(Team team, boolean showCategory) {
         RoundedPanel card = new RoundedPanel(UITheme.CARD, UITheme.BORDER);
         card.setLayout(new BoxLayout(card, BoxLayout.Y_AXIS));
         card.setBorder(BorderFactory.createEmptyBorder(16, 16, 16, 16));
-        card.setMaximumSize(new Dimension(Integer.MAX_VALUE, 140));
+        card.setMaximumSize(new Dimension(Integer.MAX_VALUE, showCategory ? 150 : 140));
         card.setAlignmentX(Component.LEFT_ALIGNMENT);
         card.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 
-        // Competition badge
-        JPanel compBadge = makeBadge(team.getCompetition().getCategory().toUpperCase());
-        compBadge.setAlignmentX(Component.LEFT_ALIGNMENT);
+        if (showCategory) {
+            JPanel catBadge = makeBadge(team.getCompetition().getCategory().toUpperCase());
+            catBadge.setAlignmentX(Component.LEFT_ALIGNMENT);
+            card.add(catBadge);
+            card.add(Box.createVerticalStrut(8));
+        }
 
         JLabel name = new JLabel(team.getTeamName());
         name.setFont(UITheme.F_SUB);
@@ -129,7 +146,6 @@ public class DashboardPanel extends JPanel {
         comp.setForeground(UITheme.GRAY);
         comp.setAlignmentX(Component.LEFT_ALIGNMENT);
 
-        // Members info
         int memberCount = team.getMembers().size();
         int total = memberCount + team.getOpenSlots().size();
         JLabel members = new JLabel(memberCount + "/" + total + " Members · " +
@@ -138,8 +154,13 @@ public class DashboardPanel extends JPanel {
         members.setForeground(UITheme.GRAY);
         members.setAlignmentX(Component.LEFT_ALIGNMENT);
 
-        card.add(compBadge);
-        card.add(Box.createVerticalStrut(8));
+        if (!showCategory) {
+            JPanel compBadge = makeBadge(team.getCompetition().getCategory().toUpperCase());
+            compBadge.setAlignmentX(Component.LEFT_ALIGNMENT);
+            card.add(compBadge);
+            card.add(Box.createVerticalStrut(8));
+        }
+
         card.add(name);
         card.add(Box.createVerticalStrut(2));
         card.add(comp);
@@ -174,8 +195,9 @@ public class DashboardPanel extends JPanel {
         badge.add(lbl);
 
         FontMetrics fm = getFontMetrics(UITheme.F_SMALL);
-        badge.setPreferredSize(new Dimension(fm.stringWidth(text) + 24, 26));
-        badge.setMaximumSize(new Dimension(fm.stringWidth(text) + 24, 26));
+        int w = fm.stringWidth(text) + 24;
+        badge.setPreferredSize(new Dimension(w, 26));
+        badge.setMaximumSize(new Dimension(w, 26));
         return badge;
     }
 

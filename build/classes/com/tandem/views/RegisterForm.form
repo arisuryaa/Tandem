@@ -2,7 +2,7 @@
 
 <Form version="1.3" maxVersion="1.9" type="org.netbeans.modules.form.forminfo.JFrameInfo">
   <Properties>
-    <Property name="defaultCloseOperation" type="int" value="3"/>
+    <Property name="defaultCloseOperation" type="int" value="2"/>
     <Property name="title" type="java.lang.String" value="Tandem - Join the Team"/>
     <Property name="resizable" type="boolean" value="false"/>
   </Properties>
@@ -24,172 +24,13 @@
   <Layout>
     <DimensionLayout dim="0">
       <Group type="103" groupAlignment="0" attributes="0">
-        <Group type="102" attributes="0">
-          <EmptySpace min="-2" pref="28" max="-2" attributes="0"/>
-          <Group type="103" groupAlignment="0" attributes="0">
-            <Component id="rfBrandLabel" alignment="0" max="32767" attributes="0"/>
-            <Component id="rfTitleLabel" alignment="0" max="32767" attributes="0"/>
-            <Component id="rfSubLabel" alignment="0" max="32767" attributes="0"/>
-            <Component id="rfNameLabel" alignment="0" max="32767" attributes="0"/>
-            <Component id="rfNameField" alignment="0" pref="394" max="32767" attributes="0"/>
-            <Component id="rfNimLabel" alignment="0" max="32767" attributes="0"/>
-            <Component id="rfNimField" alignment="0" pref="394" max="32767" attributes="0"/>
-            <Component id="rfEmailLabel" alignment="0" max="32767" attributes="0"/>
-            <Component id="rfEmailField" alignment="0" pref="394" max="32767" attributes="0"/>
-            <Component id="rfPasswordLabel" alignment="0" max="32767" attributes="0"/>
-            <Component id="rfPasswordField" alignment="0" pref="394" max="32767" attributes="0"/>
-            <Component id="rfNextButton" alignment="0" pref="394" max="32767" attributes="0"/>
-          </Group>
-          <EmptySpace min="-2" pref="28" max="-2" attributes="0"/>
-        </Group>
+        <EmptySpace min="0" pref="450" max="32767" attributes="0"/>
       </Group>
     </DimensionLayout>
     <DimensionLayout dim="1">
       <Group type="103" groupAlignment="0" attributes="0">
-        <Group type="102" attributes="0">
-          <EmptySpace min="-2" pref="24" max="-2" attributes="0"/>
-          <Component id="rfBrandLabel" min="-2" max="-2" attributes="0"/>
-          <EmptySpace min="-2" pref="12" max="-2" attributes="0"/>
-          <Component id="rfTitleLabel" min="-2" max="-2" attributes="0"/>
-          <EmptySpace min="-2" pref="4" max="-2" attributes="0"/>
-          <Component id="rfSubLabel" min="-2" max="-2" attributes="0"/>
-          <EmptySpace min="-2" pref="24" max="-2" attributes="0"/>
-          <Component id="rfNameLabel" min="-2" max="-2" attributes="0"/>
-          <EmptySpace min="-2" pref="8" max="-2" attributes="0"/>
-          <Component id="rfNameField" min="-2" pref="44" max="-2" attributes="0"/>
-          <EmptySpace min="-2" pref="16" max="-2" attributes="0"/>
-          <Component id="rfNimLabel" min="-2" max="-2" attributes="0"/>
-          <EmptySpace min="-2" pref="8" max="-2" attributes="0"/>
-          <Component id="rfNimField" min="-2" pref="44" max="-2" attributes="0"/>
-          <EmptySpace min="-2" pref="16" max="-2" attributes="0"/>
-          <Component id="rfEmailLabel" min="-2" max="-2" attributes="0"/>
-          <EmptySpace min="-2" pref="8" max="-2" attributes="0"/>
-          <Component id="rfEmailField" min="-2" pref="44" max="-2" attributes="0"/>
-          <EmptySpace min="-2" pref="16" max="-2" attributes="0"/>
-          <Component id="rfPasswordLabel" min="-2" max="-2" attributes="0"/>
-          <EmptySpace min="-2" pref="8" max="-2" attributes="0"/>
-          <Component id="rfPasswordField" min="-2" pref="44" max="-2" attributes="0"/>
-          <EmptySpace min="-2" pref="32" max="-2" attributes="0"/>
-          <Component id="rfNextButton" min="-2" pref="54" max="-2" attributes="0"/>
-          <EmptySpace pref="0" max="32767" attributes="0"/>
-        </Group>
+        <EmptySpace min="0" pref="732" max="32767" attributes="0"/>
       </Group>
     </DimensionLayout>
   </Layout>
-
-  <SubComponents>
-    <Component class="javax.swing.JLabel" name="rfBrandLabel">
-      <Properties>
-        <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
-          <Font name="SansSerif" size="14" style="1"/>
-        </Property>
-        <Property name="text" type="java.lang.String" value="Tandem"/>
-      </Properties>
-    </Component>
-    <Component class="javax.swing.JLabel" name="rfTitleLabel">
-      <Properties>
-        <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
-          <Font name="SansSerif" size="24" style="1"/>
-        </Property>
-        <Property name="text" type="java.lang.String" value="Join the Team"/>
-      </Properties>
-    </Component>
-    <Component class="javax.swing.JLabel" name="rfSubLabel">
-      <Properties>
-        <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
-          <Font name="SansSerif" size="13" style="0"/>
-        </Property>
-        <Property name="text" type="java.lang.String" value="Complete your academic profile to start matching."/>
-      </Properties>
-    </Component>
-    <Component class="javax.swing.JLabel" name="rfNameLabel">
-      <Properties>
-        <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
-          <Font name="SansSerif" size="12" style="1"/>
-        </Property>
-        <Property name="text" type="java.lang.String" value="Full Name"/>
-      </Properties>
-    </Component>
-    <Component class="javax.swing.JTextField" name="rfNameField">
-      <Properties>
-        <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
-          <Font name="SansSerif" size="14" style="0"/>
-        </Property>
-        <Property name="preferredSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
-          <Dimension value="[394, 44]"/>
-        </Property>
-      </Properties>
-    </Component>
-    <Component class="javax.swing.JLabel" name="rfNimLabel">
-      <Properties>
-        <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
-          <Font name="SansSerif" size="12" style="1"/>
-        </Property>
-        <Property name="text" type="java.lang.String" value="Student ID (NIM)"/>
-      </Properties>
-    </Component>
-    <Component class="javax.swing.JTextField" name="rfNimField">
-      <Properties>
-        <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
-          <Font name="SansSerif" size="14" style="0"/>
-        </Property>
-        <Property name="preferredSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
-          <Dimension value="[394, 44]"/>
-        </Property>
-      </Properties>
-    </Component>
-    <Component class="javax.swing.JLabel" name="rfEmailLabel">
-      <Properties>
-        <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
-          <Font name="SansSerif" size="12" style="1"/>
-        </Property>
-        <Property name="text" type="java.lang.String" value="Institutional Email"/>
-      </Properties>
-    </Component>
-    <Component class="javax.swing.JTextField" name="rfEmailField">
-      <Properties>
-        <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
-          <Font name="SansSerif" size="14" style="0"/>
-        </Property>
-        <Property name="preferredSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
-          <Dimension value="[394, 44]"/>
-        </Property>
-      </Properties>
-    </Component>
-    <Component class="javax.swing.JLabel" name="rfPasswordLabel">
-      <Properties>
-        <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
-          <Font name="SansSerif" size="12" style="1"/>
-        </Property>
-        <Property name="text" type="java.lang.String" value="Password"/>
-      </Properties>
-    </Component>
-    <Component class="javax.swing.JPasswordField" name="rfPasswordField">
-      <Properties>
-        <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
-          <Font name="SansSerif" size="14" style="0"/>
-        </Property>
-        <Property name="preferredSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
-          <Dimension value="[394, 44]"/>
-        </Property>
-      </Properties>
-    </Component>
-    <Component class="javax.swing.JButton" name="rfNextButton">
-      <Properties>
-        <Property name="background" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
-          <Color blue="1a" green="1a" red="1a" type="rgb"/>
-        </Property>
-        <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
-          <Font name="SansSerif" size="15" style="1"/>
-        </Property>
-        <Property name="foreground" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
-          <Color blue="ff" green="ff" red="ff" type="rgb"/>
-        </Property>
-        <Property name="text" type="java.lang.String" value="Complete Registration"/>
-        <Property name="preferredSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
-          <Dimension value="[394, 54]"/>
-        </Property>
-      </Properties>
-    </Component>
-  </SubComponents>
 </Form>

@@ -15,6 +15,7 @@ public class TeamController {
         Team team = new Team(IDGenerator.generateId(), teamName, competition, leader, openSlots);
         team.setDescription(description);
         store.addTeam(team);
+        store.addCompetition(competition);
         return team;
     }
 
@@ -26,12 +27,37 @@ public class TeamController {
         return result;
     }
 
-    public ArrayList<Team> getTeamsForRole(String role) {
+    public ArrayList<Team> getRecommendedTeams(User user) {
         ArrayList<Team> result = new ArrayList<>();
         for (Team t : getAllOpenTeams()) {
-            if (t.getOpenSlots().contains(role)) result.add(t);
+            if (t.isMember(user)) continue;
+            Competition comp = t.getCompetition();
+            if (comp.isRelevantFor(user.getMajor()) || comp.isRelevantFor(user.getFaculty())) {
+                result.add(t);
+            }
         }
         return result;
+    }
+
+    public ArrayList<Team> getTeamsByCategory(String category) {
+        if (category == null || category.equalsIgnoreCase("Semua")) {
+            return getAllOpenTeams();
+        }
+        ArrayList<Team> result = new ArrayList<>();
+        for (Team t : getAllOpenTeams()) {
+            if (t.getCompetition().getCategory().equalsIgnoreCase(category)) result.add(t);
+        }
+        return result;
+    }
+
+    public ArrayList<String> getAvailableCategories() {
+        ArrayList<String> cats = new ArrayList<>();
+        cats.add("Semua");
+        for (Team t : store.getAllTeams()) {
+            String cat = t.getCompetition().getCategory();
+            if (!cats.contains(cat)) cats.add(cat);
+        }
+        return cats;
     }
 
     public ArrayList<Team> getTeamsByLeader(User leader) {
