@@ -90,16 +90,42 @@ public class ProfilePanel extends JPanel {
         profileCard.add(linkRow("Portfolio", user.getPortfolioLink()));
 
         // ── Edit Profile button ────────────────────────────────────────────────
-        RoundedButton editBtn = new RoundedButton("Edit Profil", UITheme.BADGE, UITheme.TEXT);
+        RoundedButton editBtn = new RoundedButton("Edit Profil", UITheme.DARK, Color.WHITE);
         editBtn.addActionListener(e -> frame.showEditProfile());
 
-        // ── Logout ─────────────────────────────────────────────────────────────
-        RoundedButton logoutBtn = new RoundedButton("Logout", new Color(220, 50, 50), Color.WHITE);
+        // ── Logout — outline style ─────────────────────────────────────────────
+        final Color RED = new Color(220, 50, 50);
+        JButton logoutBtn = new JButton("Logout") {
+            @Override protected void paintComponent(Graphics g) {
+                Graphics2D g2 = (Graphics2D) g.create();
+                g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                g2.setColor(RED);
+                g2.setStroke(new BasicStroke(1.5f));
+                g2.drawRoundRect(1, 1, getWidth() - 2, getHeight() - 2, UITheme.R, UITheme.R);
+                g2.dispose();
+                super.paintComponent(g);
+            }
+        };
+        logoutBtn.setOpaque(false);
+        logoutBtn.setContentAreaFilled(false);
+        logoutBtn.setBorderPainted(false);
+        logoutBtn.setFocusPainted(false);
+        logoutBtn.setFont(UITheme.F_BTN);
+        logoutBtn.setForeground(RED);
+        logoutBtn.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
         logoutBtn.addActionListener(e -> {
             Session.clear();
             new LoginForm();
             SwingUtilities.getWindowAncestor(this).dispose();
         });
+
+        // ── Button row: Edit | Logout side by side ─────────────────────────────
+        JPanel btnRow = new JPanel(new GridLayout(1, 2, 10, 0));
+        btnRow.setOpaque(false);
+        btnRow.setMaximumSize(new Dimension(Integer.MAX_VALUE, 54));
+        btnRow.setAlignmentX(Component.LEFT_ALIGNMENT);
+        btnRow.add(editBtn);
+        btnRow.add(logoutBtn);
 
         // ── Assemble ───────────────────────────────────────────────────────────
         p.add(avatar);
@@ -115,10 +141,8 @@ public class ProfilePanel extends JPanel {
         p.add(sectionHead("Profil & Portofolio"));
         p.add(Box.createVerticalStrut(10));
         p.add(profileCard);
-        p.add(Box.createVerticalStrut(24));
-        p.add(editBtn);
-        p.add(Box.createVerticalStrut(10));
-        p.add(logoutBtn);
+        p.add(Box.createVerticalStrut(16));
+        p.add(btnRow);
         p.add(Box.createVerticalGlue());
 
         return p;
