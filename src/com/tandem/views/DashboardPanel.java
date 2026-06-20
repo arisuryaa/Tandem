@@ -125,7 +125,7 @@ public class DashboardPanel extends JPanel {
         RoundedPanel card = new RoundedPanel(UITheme.CARD, UITheme.BORDER);
         card.setLayout(new BoxLayout(card, BoxLayout.Y_AXIS));
         card.setBorder(BorderFactory.createEmptyBorder(16, 16, 16, 16));
-        card.setMaximumSize(new Dimension(Integer.MAX_VALUE, showCategory ? 150 : 140));
+        card.setMaximumSize(new Dimension(Integer.MAX_VALUE, showCategory ? 170 : 160));
         card.setAlignmentX(Component.LEFT_ALIGNMENT);
         card.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 
@@ -166,6 +166,16 @@ public class DashboardPanel extends JPanel {
         card.add(comp);
         card.add(Box.createVerticalStrut(8));
         card.add(members);
+
+        String regDeadline = team.getRegistrationDeadline();
+        if (!regDeadline.isEmpty()) {
+            JLabel deadlineLbl = new JLabel("Tutup: " + regDeadline);
+            deadlineLbl.setFont(UITheme.F_SMALL);
+            deadlineLbl.setForeground(UITheme.HINT);
+            deadlineLbl.setAlignmentX(Component.LEFT_ALIGNMENT);
+            card.add(Box.createVerticalStrut(4));
+            card.add(deadlineLbl);
+        }
 
         card.addMouseListener(new MouseAdapter() {
             @Override public void mouseClicked(MouseEvent e) { frame.showTeamDetail(team); }

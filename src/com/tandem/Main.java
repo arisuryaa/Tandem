@@ -42,7 +42,8 @@ public class Main {
         ArrayList<String> tags = new ArrayList<>();
         tags.add("Informatika"); tags.add("Sistem Informasi");
         Competition comp = new Competition(IDGenerator.generateId(),
-                "Hackathon Nasional 2025", "Hackathon", "2025-08-15", 3, tags);
+                "Hackathon Nasional 2025", "Hackathon",
+                "2025-08-10", "2025-08-15", "2025-08-17", 3, tags);
 
         ArrayList<String> slots = new ArrayList<>();
         slots.add("Desainer UI");

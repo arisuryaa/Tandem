@@ -206,7 +206,11 @@ public class AlertsPanel extends JPanel {
             refreshPanel();
         });
         declineBtn.addActionListener(e -> {
-            tc.rejectRequest(jr);
+            String reason = JOptionPane.showInputDialog(this,
+                    "Masukkan alasan penolakan (opsional, bisa dikosongkan):",
+                    "Tolak Request", JOptionPane.PLAIN_MESSAGE);
+            if (reason == null) return;
+            tc.rejectRequest(jr, reason);
             refreshPanel();
         });
 
@@ -244,10 +248,13 @@ public class AlertsPanel extends JPanel {
     // ── My Application Row ────────────────────────────────────────────────────
 
     private JPanel buildMyApplicationRow(JoinRequest jr) {
+        boolean isRejectedWithMsg = jr.getStatus() == com.tandem.models.enums.RequestStatus.REJECTED
+                && !jr.getRejectionMessage().isEmpty();
+
         RoundedPanel row = new RoundedPanel(UITheme.CARD, UITheme.BORDER);
         row.setLayout(new BorderLayout(12, 0));
         row.setBorder(BorderFactory.createEmptyBorder(14, 16, 14, 16));
-        row.setMaximumSize(new Dimension(Integer.MAX_VALUE, 72));
+        row.setMaximumSize(new Dimension(Integer.MAX_VALUE, isRejectedWithMsg ? 100 : 72));
         row.setAlignmentX(Component.LEFT_ALIGNMENT);
 
         JPanel info = new JPanel();
@@ -268,6 +275,15 @@ public class AlertsPanel extends JPanel {
         info.add(teamName);
         info.add(Box.createVerticalStrut(2));
         info.add(compName);
+
+        if (isRejectedWithMsg) {
+            JLabel reasonLabel = new JLabel("<html><i>Alasan: " + jr.getRejectionMessage() + "</i></html>");
+            reasonLabel.setFont(UITheme.F_SMALL);
+            reasonLabel.setForeground(new Color(200, 50, 50));
+            reasonLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
+            info.add(Box.createVerticalStrut(4));
+            info.add(reasonLabel);
+        }
 
         String statusStr = jr.getStatus().toString();
         JLabel statusLabel = new JLabel(statusStr);

@@ -111,33 +111,39 @@ public class DataStore {
         tagsHackathon.add("Informatika"); tagsHackathon.add("Teknik Komputer");
         tagsHackathon.add("Sistem Informasi"); tagsHackathon.add("Ilmu Komputer");
         competitions.add(new Competition(IDGenerator.generateId(),
-                "Hackathon Nasional 2025", "Hackathon", "2025-08-15", 4, tagsHackathon));
+                "Hackathon Nasional 2025", "Hackathon",
+                "2025-08-10", "2025-08-15", "2025-08-17", 4, tagsHackathon));
 
         ArrayList<String> tagsDesign = new ArrayList<>();
         tagsDesign.add("Desain Komunikasi Visual"); tagsDesign.add("Informatika");
         tagsDesign.add("Seni Rupa"); tagsDesign.add("DKV");
         competitions.add(new Competition(IDGenerator.generateId(),
-                "UIUX Competition 2025", "Design", "2025-07-30", 3, tagsDesign));
+                "UIUX Competition 2025", "Design",
+                "2025-07-25", "2025-07-30", "2025-07-31", 3, tagsDesign));
 
         ArrayList<String> tagsPkmK = new ArrayList<>();
         tagsPkmK.add("Manajemen"); tagsPkmK.add("Ekonomi");
         tagsPkmK.add("Akuntansi"); tagsPkmK.add("Informatika");
         competitions.add(new Competition(IDGenerator.generateId(),
-                "PKM-K Kewirausahaan 2025", "PKM", "2025-09-01", 5, tagsPkmK));
+                "PKM-K Kewirausahaan 2025", "PKM",
+                "2025-08-25", "2025-09-01", "2025-09-03", 5, tagsPkmK));
 
         ArrayList<String> tagsBusiness = new ArrayList<>();
         tagsBusiness.add("Manajemen"); tagsBusiness.add("Ekonomi"); tagsBusiness.add("Akuntansi");
         competitions.add(new Competition(IDGenerator.generateId(),
-                "Business Plan Competition 2025", "Business", "2025-10-15", 4, tagsBusiness));
+                "Business Plan Competition 2025", "Business",
+                "2025-10-10", "2025-10-15", "2025-10-16", 4, tagsBusiness));
 
         ArrayList<String> tagsData = new ArrayList<>();
         tagsData.add("Statistika"); tagsData.add("Informatika"); tagsData.add("Matematika");
         competitions.add(new Competition(IDGenerator.generateId(),
-                "Data Science Challenge 2025", "Data Science", "2025-08-20", 3, tagsData));
+                "Data Science Challenge 2025", "Data Science",
+                "2025-08-15", "2025-08-20", "2025-08-22", 3, tagsData));
 
         ArrayList<String> tagsPkmPm = new ArrayList<>();
         tagsPkmPm.add("Semua");
         competitions.add(new Competition(IDGenerator.generateId(),
-                "PKM-PM Pengabdian Masyarakat", "PKM", "2025-09-15", 5, tagsPkmPm));
+                "PKM-PM Pengabdian Masyarakat", "PKM",
+                "2025-09-10", "2025-09-15", "2025-09-20", 5, tagsPkmPm));
     }
 }

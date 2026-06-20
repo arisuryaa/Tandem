@@ -188,13 +188,25 @@ public class TeamDetailPanel extends JPanel {
         sep.setForeground(UITheme.BORDER);
         sep.setMaximumSize(new Dimension(Integer.MAX_VALUE, 1));
 
-        // Competition + Timeline row
+        // Row 1: Competition + Submission deadline
         JPanel infoRow = new JPanel(new GridLayout(1, 2, 16, 0));
         infoRow.setOpaque(false);
         infoRow.setAlignmentX(Component.LEFT_ALIGNMENT);
         infoRow.setMaximumSize(new Dimension(Integer.MAX_VALUE, 60));
-        infoRow.add(infoBlock("COMPETITION", team.getCompetition().getName()));
-        infoRow.add(infoBlock("TIMELINE", "Ends " + team.getCompetition().getDeadline()));
+        infoRow.add(infoBlock("KOMPETISI", team.getCompetition().getName()));
+        infoRow.add(infoBlock("DEADLINE SUBMISSION", team.getCompetition().getSubmissionDeadline()));
+
+        // Row 2: Event schedule + registration deadline
+        JPanel infoRow2 = new JPanel(new GridLayout(1, 2, 16, 0));
+        infoRow2.setOpaque(false);
+        infoRow2.setAlignmentX(Component.LEFT_ALIGNMENT);
+        infoRow2.setMaximumSize(new Dimension(Integer.MAX_VALUE, 60));
+        String jadwal = team.getCompetition().getEventStartDate()
+                + " s/d " + team.getCompetition().getEventEndDate();
+        infoRow2.add(infoBlock("JADWAL LOMBA", jadwal));
+        String regDead = team.getRegistrationDeadline();
+        infoRow2.add(infoBlock("DEADLINE PENDAFTARAN TIM",
+                regDead.isEmpty() ? "Tidak ditentukan" : regDead));
 
         // Tags row
         JPanel tagsRow = new JPanel(new FlowLayout(FlowLayout.LEFT, 6, 0));
@@ -217,6 +229,8 @@ public class TeamDetailPanel extends JPanel {
         card.add(sep);
         card.add(Box.createVerticalStrut(12));
         card.add(infoRow);
+        card.add(Box.createVerticalStrut(10));
+        card.add(infoRow2);
         if (!team.getCompetition().getTags().isEmpty()) {
             card.add(Box.createVerticalStrut(10));
             card.add(tagsRow);
@@ -375,7 +389,11 @@ public class TeamDetailPanel extends JPanel {
             rebuildPanel();
         });
         declineBtn.addActionListener(e -> {
-            tc.rejectRequest(jr);
+            String reason = JOptionPane.showInputDialog(this,
+                    "Masukkan alasan penolakan (opsional, bisa dikosongkan):",
+                    "Tolak Request", JOptionPane.PLAIN_MESSAGE);
+            if (reason == null) return;
+            tc.rejectRequest(jr, reason);
             rebuildPanel();
         });
 

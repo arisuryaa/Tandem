@@ -49,7 +49,8 @@ public class TandemApp {
         if (userA != null) {
             ArrayList<String> tags1 = new ArrayList<>();
             tags1.add("Informatika"); tags1.add("Teknik Komputer");
-            Competition c1 = new Competition("C001", "Hackathon Nasional 2025", "Hackathon", "2025-08-15", 3, tags1);
+            Competition c1 = new Competition("C001", "Hackathon Nasional 2025", "Hackathon",
+                    "2025-08-10", "2025-08-15", "2025-08-17", 3, tags1);
             ArrayList<String> slots1 = new ArrayList<>();
             slots1.add("Desainer UI/UX");
             slots1.add("Analis Bisnis");
@@ -61,7 +62,8 @@ public class TandemApp {
         if (userC != null) {
             ArrayList<String> tags2 = new ArrayList<>();
             tags2.add("Manajemen"); tags2.add("Ekonomi"); tags2.add("Akuntansi");
-            Competition c2 = new Competition("C002", "Business Plan Competition 2025", "Business", "2025-09-20", 4, tags2);
+            Competition c2 = new Competition("C002", "Business Plan Competition 2025", "Business",
+                    "2025-09-15", "2025-09-20", "2025-09-21", 4, tags2);
             ArrayList<String> slots2 = new ArrayList<>();
             slots2.add("Programmer");
             slots2.add("Desainer Presentasi");

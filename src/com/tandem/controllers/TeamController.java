@@ -82,8 +82,8 @@ public class TeamController {
         request.getTargetTeam().removePendingRequest(request);
     }
 
-    public void rejectRequest(JoinRequest request) {
-        request.reject();
+    public void rejectRequest(JoinRequest request, String reason) {
+        request.reject(reason);
         request.getTargetTeam().removePendingRequest(request);
     }
 }

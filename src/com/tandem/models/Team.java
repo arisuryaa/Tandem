@@ -6,9 +6,12 @@ import java.util.ArrayList;
 
 public class Team implements Serializable {
 
+    private static final long serialVersionUID = 1L;
+
     private String teamId;
     private String teamName;
     private String description;
+    private String registrationDeadline;
     private Competition competition;
     private User leader;
     private ArrayList<User> members;
@@ -18,16 +21,17 @@ public class Team implements Serializable {
 
     public Team(String teamId, String teamName, Competition competition,
                 User leader, ArrayList<String> openSlots) {
-        this.teamId = teamId;
-        this.teamName = teamName;
-        this.description = "";
-        this.competition = competition;
-        this.leader = leader;
-        this.members = new ArrayList<>();
+        this.teamId               = teamId;
+        this.teamName             = teamName;
+        this.description          = "";
+        this.registrationDeadline = "";
+        this.competition          = competition;
+        this.leader               = leader;
+        this.members              = new ArrayList<>();
         this.members.add(leader);
-        this.openSlots = new ArrayList<>(openSlots);
-        this.pendingRequests = new ArrayList<>();
-        this.status = TeamStatus.OPEN;
+        this.openSlots            = new ArrayList<>(openSlots);
+        this.pendingRequests      = new ArrayList<>();
+        this.status               = TeamStatus.OPEN;
     }
 
     public void addMember(User user) {
@@ -40,24 +44,16 @@ public class Team implements Serializable {
         }
     }
 
-    public boolean isMember(User user) {
-        return members.contains(user);
-    }
+    public boolean isMember(User user) { return members.contains(user); }
+    public boolean isFull()            { return openSlots.isEmpty(); }
 
-    public boolean isFull() {
-        return openSlots.isEmpty();
-    }
-
-    public void addPendingRequest(JoinRequest request) {
-        pendingRequests.add(request);
-    }
-
-    public void removePendingRequest(JoinRequest request) {
-        pendingRequests.remove(request);
-    }
+    public void addPendingRequest(JoinRequest request)    { pendingRequests.add(request); }
+    public void removePendingRequest(JoinRequest request) { pendingRequests.remove(request); }
 
     public String getTeamId()                          { return teamId; }
     public String getTeamName()                        { return teamName; }
+    public String getDescription()                     { return description; }
+    public String getRegistrationDeadline()            { return registrationDeadline; }
     public Competition getCompetition()                { return competition; }
     public User getLeader()                            { return leader; }
     public TeamStatus getStatus()                      { return status; }
@@ -65,10 +61,10 @@ public class Team implements Serializable {
     public ArrayList<String> getOpenSlots()            { return new ArrayList<>(openSlots); }
     public ArrayList<JoinRequest> getPendingRequests() { return new ArrayList<>(pendingRequests); }
 
-    public void setTeamName(String teamName)       { this.teamName = teamName; }
-    public void setDescription(String description) { this.description = description; }
-    public String getDescription()                 { return description; }
-    public void setStatus(TeamStatus status)       { this.status = status; }
+    public void setTeamName(String teamName)             { this.teamName = teamName; }
+    public void setDescription(String description)       { this.description = description; }
+    public void setRegistrationDeadline(String deadline) { this.registrationDeadline = deadline; }
+    public void setStatus(TeamStatus status)             { this.status = status; }
 
     @Override
     public String toString() {

@@ -22,11 +22,13 @@ public class CreateTeamPanel extends JPanel {
     private JPanel compCreatePanel;
     private JComboBox<String> existingCompBox;
     private JTextField compNameField, compDeadlineField;
+    private JTextField compEventStartField, compEventEndField;
     private JComboBox<String> compCategoryBox;
     private JTextField compTagsField;
 
     // Team fields
     private JTextField teamNameField, descField;
+    private JTextField teamRegDeadlineField;
     private JPanel slotsContainer;
     private final ArrayList<JTextField> slotFields = new ArrayList<>();
 
@@ -72,6 +74,9 @@ public class CreateTeamPanel extends JPanel {
         teamNameField = styledField();
         // Description
         descField = styledField();
+        // Registration deadline
+        teamRegDeadlineField = styledField();
+        teamRegDeadlineField.setText("YYYY-MM-DD (opsional)");
 
         // Competition selection
         JLabel compLabel = sectionLabel("Kompetisi");
@@ -147,6 +152,12 @@ public class CreateTeamPanel extends JPanel {
         p.add(sectionLabel("Nama Tim"));      p.add(Box.createVerticalStrut(8)); p.add(teamNameField);
         p.add(Box.createVerticalStrut(16));
         p.add(sectionLabel("Deskripsi Tim")); p.add(Box.createVerticalStrut(8)); p.add(descField);
+        p.add(Box.createVerticalStrut(16));
+        p.add(sectionLabel("Deadline Pendaftaran Tim"));
+        p.add(Box.createVerticalStrut(4));
+        p.add(smallGray("Batas tanggal orang bisa bergabung ke tim ini. Kosongkan jika tidak ada."));
+        p.add(Box.createVerticalStrut(8));
+        p.add(teamRegDeadlineField);
         p.add(Box.createVerticalStrut(24));
         p.add(compLabel);
         p.add(Box.createVerticalStrut(4));
@@ -193,7 +204,14 @@ public class CreateTeamPanel extends JPanel {
         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
         panel.setOpaque(false);
 
-        compNameField     = styledField();
+        compNameField = styledField();
+
+        compEventStartField = styledField();
+        compEventStartField.setText("YYYY-MM-DD");
+
+        compEventEndField = styledField();
+        compEventEndField.setText("YYYY-MM-DD");
+
         compDeadlineField = styledField();
         compDeadlineField.setText("YYYY-MM-DD");
 
@@ -211,7 +229,11 @@ public class CreateTeamPanel extends JPanel {
         panel.add(Box.createVerticalStrut(12));
         panel.add(smallGray("Kategori")); panel.add(Box.createVerticalStrut(6)); panel.add(compCategoryBox);
         panel.add(Box.createVerticalStrut(12));
-        panel.add(smallGray("Deadline")); panel.add(Box.createVerticalStrut(6)); panel.add(compDeadlineField);
+        panel.add(smallGray("Tanggal Mulai Event")); panel.add(Box.createVerticalStrut(6)); panel.add(compEventStartField);
+        panel.add(Box.createVerticalStrut(12));
+        panel.add(smallGray("Tanggal Selesai Event")); panel.add(Box.createVerticalStrut(6)); panel.add(compEventEndField);
+        panel.add(Box.createVerticalStrut(12));
+        panel.add(smallGray("Deadline Submission (opsional)")); panel.add(Box.createVerticalStrut(6)); panel.add(compDeadlineField);
         panel.add(Box.createVerticalStrut(12));
         panel.add(smallGray("Tags Jurusan (pisah dengan koma)")); panel.add(Box.createVerticalStrut(6)); panel.add(compTagsField);
 
@@ -257,27 +279,41 @@ public class CreateTeamPanel extends JPanel {
             int idx = existingCompBox.getSelectedIndex();
             comp = allComps.get(idx);
         } else {
-            String cName = compNameField.getText().trim();
-            String cDead = compDeadlineField.getText().trim();
-            String cCat  = (String) compCategoryBox.getSelectedItem();
+            String cName       = compNameField.getText().trim();
+            String cEventStart = compEventStartField.getText().trim();
+            String cEventEnd   = compEventEndField.getText().trim();
+            String cDead       = compDeadlineField.getText().trim();
+            String cCat        = (String) compCategoryBox.getSelectedItem();
 
-            if (cName.isEmpty() || cDead.isEmpty()) {
-                warn("Nama dan deadline kompetisi wajib diisi!"); return;
+            if (cName.isEmpty()) {
+                warn("Nama kompetisi wajib diisi!"); return;
+            }
+            if (cEventStart.isEmpty() || cEventStart.equals("YYYY-MM-DD")) {
+                warn("Tanggal mulai event wajib diisi!"); return;
+            }
+            if (cEventEnd.isEmpty() || cEventEnd.equals("YYYY-MM-DD")) {
+                warn("Tanggal selesai event wajib diisi!"); return;
             }
 
             ArrayList<String> tags = new ArrayList<>();
             for (String tag : compTagsField.getText().split(",")) {
                 String t = tag.trim();
-                if (!t.isEmpty()) tags.add(t);
+                if (!t.isEmpty() && !t.startsWith("e.g")) tags.add(t);
             }
             if (tags.isEmpty()) tags.add("Semua");
 
+            String submissionDeadline = (cDead.isEmpty() || cDead.equals("YYYY-MM-DD")) ? cEventStart : cDead;
+
             comp = new Competition(
                     java.util.UUID.randomUUID().toString().substring(0, 8).toUpperCase(),
-                    cName, cCat, cDead, slots.size() + 1, tags);
+                    cName, cCat, submissionDeadline, cEventStart, cEventEnd, slots.size() + 1, tags);
         }
 
-        tc.createTeam(leader, tName, desc, comp, slots);
+        Team newTeam = tc.createTeam(leader, tName, desc, comp, slots);
+        String regDeadline = teamRegDeadlineField.getText().trim();
+        if (!regDeadline.isEmpty() && !regDeadline.equals("YYYY-MM-DD (opsional)")) {
+            newTeam.setRegistrationDeadline(regDeadline);
+        }
         JOptionPane.showMessageDialog(this, "Tim \"" + tName + "\" berhasil dibuat!");
         frame.showDashboard();
     }

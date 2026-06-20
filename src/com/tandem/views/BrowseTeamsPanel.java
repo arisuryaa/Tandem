@@ -165,7 +165,7 @@ public class BrowseTeamsPanel extends JPanel {
         RoundedPanel card = new RoundedPanel(UITheme.CARD, UITheme.BORDER);
         card.setLayout(new BoxLayout(card, BoxLayout.Y_AXIS));
         card.setBorder(BorderFactory.createEmptyBorder(16, 16, 16, 16));
-        card.setMaximumSize(new Dimension(Integer.MAX_VALUE, 160));
+        card.setMaximumSize(new Dimension(Integer.MAX_VALUE, 190));
         card.setAlignmentX(Component.LEFT_ALIGNMENT);
         card.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 
@@ -194,6 +194,16 @@ public class BrowseTeamsPanel extends JPanel {
         card.add(compName);
         card.add(Box.createVerticalStrut(10));
         card.add(slotsRow);
+
+        String regDeadline = team.getRegistrationDeadline();
+        if (!regDeadline.isEmpty()) {
+            card.add(Box.createVerticalStrut(8));
+            JLabel deadlineLabel = new JLabel("Tutup pendaftaran: " + regDeadline);
+            deadlineLabel.setFont(UITheme.F_SMALL);
+            deadlineLabel.setForeground(UITheme.HINT);
+            deadlineLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
+            card.add(deadlineLabel);
+        }
 
         card.addMouseListener(new MouseAdapter() {
             @Override public void mouseClicked(MouseEvent e) { frame.showTeamDetail(team); }
