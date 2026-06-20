@@ -107,18 +107,22 @@ public class BrowseTeamsPanel extends JPanel {
         User user = Session.getCurrentUser();
         ArrayList<Team> teams = tc.getTeamsByCategory(activeFilter);
 
-        if (teams.isEmpty()) {
+        ArrayList<Team> visible = new ArrayList<>();
+        for (Team t : teams) {
+            if (!t.isMember(user) && !isDeadlinePassed(t.getRegistrationDeadline())) {
+                visible.add(t);
+            }
+        }
+        if (visible.isEmpty()) {
             JLabel empty = new JLabel("Tidak ada tim yang tersedia untuk kategori ini.");
             empty.setFont(UITheme.F_BODY);
             empty.setForeground(UITheme.GRAY);
             empty.setAlignmentX(Component.LEFT_ALIGNMENT);
             listPanel.add(empty);
         } else {
-            for (Team t : teams) {
-                if (!t.isMember(user)) {
-                    listPanel.add(makeTeamCard(t));
-                    listPanel.add(Box.createVerticalStrut(12));
-                }
+            for (Team t : visible) {
+                listPanel.add(makeTeamCard(t));
+                listPanel.add(Box.createVerticalStrut(12));
             }
         }
         listPanel.revalidate();
@@ -210,6 +214,15 @@ public class BrowseTeamsPanel extends JPanel {
         });
 
         return card;
+    }
+
+    private static boolean isDeadlinePassed(String dateStr) {
+        if (dateStr == null || dateStr.isEmpty()) return false;
+        try {
+            return java.time.LocalDate.now().isAfter(java.time.LocalDate.parse(dateStr));
+        } catch (Exception ex) {
+            return false;
+        }
     }
 
     private JLabel smallGray(String text) {

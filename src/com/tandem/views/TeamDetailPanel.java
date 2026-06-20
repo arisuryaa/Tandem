@@ -134,8 +134,10 @@ public class TeamDetailPanel extends JPanel {
         if (!isLeader && !team.isMember(me) && !team.getOpenSlots().isEmpty()) {
             p.add(Box.createVerticalStrut(16));
             RoundedButton joinBtn;
-            boolean alreadyRequested = rc.hasPendingRequest(me, team);
-            if (alreadyRequested) {
+            if (isDeadlinePassed(team.getRegistrationDeadline())) {
+                joinBtn = new RoundedButton("Pendaftaran Ditutup", UITheme.BADGE, UITheme.GRAY);
+                joinBtn.setEnabled(false);
+            } else if (rc.hasPendingRequest(me, team)) {
                 joinBtn = new RoundedButton("Request Sent ✓", UITheme.BADGE, UITheme.GRAY);
                 joinBtn.setEnabled(false);
             } else {
@@ -430,6 +432,15 @@ public class TeamDetailPanel extends JPanel {
         mainScrollPane.setViewportView(buildContent());
         revalidate();
         repaint();
+    }
+
+    private static boolean isDeadlinePassed(String dateStr) {
+        if (dateStr == null || dateStr.isEmpty()) return false;
+        try {
+            return java.time.LocalDate.now().isAfter(java.time.LocalDate.parse(dateStr));
+        } catch (Exception ex) {
+            return false;
+        }
     }
 
     private JPanel makeAvatar(String letter, Color bg, Color fg) {

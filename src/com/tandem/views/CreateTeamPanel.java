@@ -28,7 +28,9 @@ public class CreateTeamPanel extends JPanel {
 
     // Team fields
     private JTextField teamNameField, descField;
-    private JTextField teamRegDeadlineField;
+    private JCheckBox regDeadlineCheck;
+    private JComboBox<String> regDayBox, regMonthBox, regYearBox;
+    private JPanel regDateRow;
     private JPanel slotsContainer;
     private final ArrayList<JTextField> slotFields = new ArrayList<>();
 
@@ -74,9 +76,46 @@ public class CreateTeamPanel extends JPanel {
         teamNameField = styledField();
         // Description
         descField = styledField();
-        // Registration deadline
-        teamRegDeadlineField = styledField();
-        teamRegDeadlineField.setText("YYYY-MM-DD (opsional)");
+
+        // Registration deadline — date picker
+        regDeadlineCheck = new JCheckBox("Tentukan batas pendaftaran anggota");
+        regDeadlineCheck.setFont(UITheme.F_BODY);
+        regDeadlineCheck.setBackground(UITheme.BG);
+        regDeadlineCheck.setForeground(UITheme.TEXT);
+        regDeadlineCheck.setAlignmentX(Component.LEFT_ALIGNMENT);
+        regDeadlineCheck.setFocusPainted(false);
+
+        String[] days = new String[31];
+        for (int i = 0; i < 31; i++) days[i] = String.format("%02d", i + 1);
+        regDayBox = new JComboBox<>(days);
+        regDayBox.setFont(UITheme.F_BODY);
+        regDayBox.setBackground(UITheme.CARD);
+
+        regMonthBox = new JComboBox<>(new String[]{
+            "Januari","Februari","Maret","April","Mei","Juni",
+            "Juli","Agustus","September","Oktober","November","Desember"});
+        regMonthBox.setFont(UITheme.F_BODY);
+        regMonthBox.setBackground(UITheme.CARD);
+
+        regYearBox = new JComboBox<>(new String[]{"2025","2026","2027","2028","2029","2030"});
+        regYearBox.setSelectedItem("2026");
+        regYearBox.setFont(UITheme.F_BODY);
+        regYearBox.setBackground(UITheme.CARD);
+
+        regDateRow = new JPanel(new GridLayout(1, 3, 8, 0));
+        regDateRow.setOpaque(false);
+        regDateRow.setPreferredSize(new Dimension(0, 44));
+        regDateRow.setMaximumSize(new Dimension(Integer.MAX_VALUE, 44));
+        regDateRow.setAlignmentX(Component.LEFT_ALIGNMENT);
+        regDateRow.add(regDayBox);
+        regDateRow.add(regMonthBox);
+        regDateRow.add(regYearBox);
+        regDateRow.setVisible(false);
+
+        regDeadlineCheck.addActionListener(e -> {
+            regDateRow.setVisible(regDeadlineCheck.isSelected());
+            revalidate(); repaint();
+        });
 
         // Competition selection
         JLabel compLabel = sectionLabel("Kompetisi");
@@ -155,9 +194,11 @@ public class CreateTeamPanel extends JPanel {
         p.add(Box.createVerticalStrut(16));
         p.add(sectionLabel("Deadline Pendaftaran Tim"));
         p.add(Box.createVerticalStrut(4));
-        p.add(smallGray("Batas tanggal orang bisa bergabung ke tim ini. Kosongkan jika tidak ada."));
+        p.add(smallGray("Batas tanggal orang bisa bergabung ke tim ini (opsional)."));
         p.add(Box.createVerticalStrut(8));
-        p.add(teamRegDeadlineField);
+        p.add(regDeadlineCheck);
+        p.add(Box.createVerticalStrut(8));
+        p.add(regDateRow);
         p.add(Box.createVerticalStrut(24));
         p.add(compLabel);
         p.add(Box.createVerticalStrut(4));
@@ -310,9 +351,11 @@ public class CreateTeamPanel extends JPanel {
         }
 
         Team newTeam = tc.createTeam(leader, tName, desc, comp, slots);
-        String regDeadline = teamRegDeadlineField.getText().trim();
-        if (!regDeadline.isEmpty() && !regDeadline.equals("YYYY-MM-DD (opsional)")) {
-            newTeam.setRegistrationDeadline(regDeadline);
+        if (regDeadlineCheck.isSelected()) {
+            int day   = regDayBox.getSelectedIndex() + 1;
+            int month = regMonthBox.getSelectedIndex() + 1;
+            String year = (String) regYearBox.getSelectedItem();
+            newTeam.setRegistrationDeadline(String.format("%s-%02d-%02d", year, month, day));
         }
         JOptionPane.showMessageDialog(this, "Tim \"" + tName + "\" berhasil dibuat!");
         frame.showDashboard();

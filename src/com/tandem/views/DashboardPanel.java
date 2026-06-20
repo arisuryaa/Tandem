@@ -86,7 +86,11 @@ public class DashboardPanel extends JPanel {
         p.add(recSub);
         p.add(Box.createVerticalStrut(12));
 
-        ArrayList<Team> recommended = tc.getRecommendedTeams(user);
+        ArrayList<Team> allRec = tc.getRecommendedTeams(user);
+        ArrayList<Team> recommended = new ArrayList<>();
+        for (Team t : allRec) {
+            if (!isDeadlinePassed(t.getRegistrationDeadline())) recommended.add(t);
+        }
         if (recommended.isEmpty()) {
             p.add(emptyState("Belum ada tim yang cocok dengan jurusanmu.",
                              "Coba cari tim atau buat tim baru!"));
@@ -209,6 +213,15 @@ public class DashboardPanel extends JPanel {
         badge.setPreferredSize(new Dimension(w, 26));
         badge.setMaximumSize(new Dimension(w, 26));
         return badge;
+    }
+
+    private static boolean isDeadlinePassed(String dateStr) {
+        if (dateStr == null || dateStr.isEmpty()) return false;
+        try {
+            return java.time.LocalDate.now().isAfter(java.time.LocalDate.parse(dateStr));
+        } catch (Exception ex) {
+            return false;
+        }
     }
 
     private JLabel sectionHead(String text) {
