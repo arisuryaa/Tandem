@@ -122,6 +122,7 @@ public class ProfilePanel extends JPanel {
         // ── Button row: Edit | Logout side by side ─────────────────────────────
         JPanel btnRow = new JPanel(new GridLayout(1, 2, 10, 0));
         btnRow.setOpaque(false);
+        btnRow.setPreferredSize(new Dimension(0, 54));
         btnRow.setMaximumSize(new Dimension(Integer.MAX_VALUE, 54));
         btnRow.setAlignmentX(Component.LEFT_ALIGNMENT);
         btnRow.add(editBtn);
