@@ -46,8 +46,16 @@ public class BrowseTeamsPanel extends JPanel {
 
     private javax.swing.JScrollPane mainScrollPane;
 
+    private static class FitPanel extends JPanel implements Scrollable {
+        @Override public Dimension getPreferredScrollableViewportSize() { return getPreferredSize(); }
+        @Override public int getScrollableUnitIncrement(java.awt.Rectangle r, int o, int d) { return 20; }
+        @Override public int getScrollableBlockIncrement(java.awt.Rectangle r, int o, int d) { return r.height; }
+        @Override public boolean getScrollableTracksViewportWidth() { return true; }
+        @Override public boolean getScrollableTracksViewportHeight() { return false; }
+    }
+
     private JPanel buildContent() {
-        JPanel p = new JPanel();
+        FitPanel p = new FitPanel();
         p.setLayout(new BoxLayout(p, BoxLayout.Y_AXIS));
         p.setBackground(UITheme.BG);
         p.setBorder(BorderFactory.createEmptyBorder(24, UITheme.PAD, 24, UITheme.PAD));
