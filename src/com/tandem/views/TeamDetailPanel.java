@@ -56,11 +56,19 @@ public class TeamDetailPanel extends JPanel {
     private javax.swing.JScrollPane mainScrollPane;
     // End of variables declaration
 
+    private static class FitPanel extends JPanel implements Scrollable {
+        @Override public Dimension getPreferredScrollableViewportSize() { return getPreferredSize(); }
+        @Override public int getScrollableUnitIncrement(java.awt.Rectangle r, int o, int d) { return 20; }
+        @Override public int getScrollableBlockIncrement(java.awt.Rectangle r, int o, int d) { return r.height; }
+        @Override public boolean getScrollableTracksViewportWidth() { return true; }
+        @Override public boolean getScrollableTracksViewportHeight() { return false; }
+    }
+
     private JPanel buildContent() {
         User me = Session.getCurrentUser();
         boolean isLeader = team.getLeader().getUserId().equals(me.getUserId());
 
-        JPanel p = new JPanel();
+        FitPanel p = new FitPanel();
         p.setLayout(new BoxLayout(p, BoxLayout.Y_AXIS));
         p.setBackground(UITheme.BG);
         p.setBorder(BorderFactory.createEmptyBorder(20, UITheme.PAD, 24, UITheme.PAD));
@@ -190,32 +198,26 @@ public class TeamDetailPanel extends JPanel {
         sep.setForeground(UITheme.BORDER);
         sep.setMaximumSize(new Dimension(Integer.MAX_VALUE, 1));
 
-        // Row 1: Competition + Submission deadline
-        JPanel infoRow = new JPanel(new GridLayout(1, 2, 16, 0));
+        // Row: Jadwal + Batas Daftar (two columns)
+        JPanel infoRow = new JPanel(new GridLayout(1, 2, 12, 0));
         infoRow.setOpaque(false);
         infoRow.setAlignmentX(Component.LEFT_ALIGNMENT);
+        infoRow.setPreferredSize(new Dimension(0, 60));
         infoRow.setMaximumSize(new Dimension(Integer.MAX_VALUE, 60));
-        infoRow.add(infoBlock("KOMPETISI", team.getCompetition().getName()));
-        infoRow.add(infoBlock("DEADLINE SUBMISSION", team.getCompetition().getSubmissionDeadline()));
-
-        // Row 2: Event schedule + registration deadline
-        JPanel infoRow2 = new JPanel(new GridLayout(1, 2, 16, 0));
-        infoRow2.setOpaque(false);
-        infoRow2.setAlignmentX(Component.LEFT_ALIGNMENT);
-        infoRow2.setMaximumSize(new Dimension(Integer.MAX_VALUE, 60));
         String jadwal = team.getCompetition().getEventStartDate()
                 + " s/d " + team.getCompetition().getEventEndDate();
-        infoRow2.add(infoBlock("JADWAL LOMBA", jadwal));
         String regDead = team.getRegistrationDeadline();
-        infoRow2.add(infoBlock("DEADLINE PENDAFTARAN TIM",
-                regDead.isEmpty() ? "Tidak ditentukan" : regDead));
+        infoRow.add(infoBlock("JADWAL LOMBA", jadwal));
+        infoRow.add(infoBlock("BATAS DAFTAR", regDead.isEmpty() ? "Tidak ditentukan" : regDead));
 
-        // Tags row
+        // Tags row — limit to 3 to prevent horizontal overflow
+        java.util.List<String> allTags = team.getCompetition().getTags();
         JPanel tagsRow = new JPanel(new FlowLayout(FlowLayout.LEFT, 6, 0));
         tagsRow.setOpaque(false);
         tagsRow.setAlignmentX(Component.LEFT_ALIGNMENT);
-        for (String tag : team.getCompetition().getTags()) {
-            JLabel tagPill = new JLabel(tag);
+        int shown = Math.min(allTags.size(), 3);
+        for (int i = 0; i < shown; i++) {
+            JLabel tagPill = new JLabel(allTags.get(i));
             tagPill.setFont(UITheme.F_SMALL);
             tagPill.setForeground(UITheme.GRAY);
             tagPill.setBorder(BorderFactory.createCompoundBorder(
@@ -223,17 +225,23 @@ public class TeamDetailPanel extends JPanel {
                     BorderFactory.createEmptyBorder(2, 8, 2, 8)));
             tagsRow.add(tagPill);
         }
+        if (allTags.size() > shown) {
+            JLabel more = new JLabel("+" + (allTags.size() - shown));
+            more.setFont(UITheme.F_SMALL);
+            more.setForeground(UITheme.HINT);
+            tagsRow.add(more);
+        }
 
         card.add(conceptLabel);
         card.add(Box.createVerticalStrut(8));
         card.add(descLabel);
         card.add(Box.createVerticalStrut(12));
         card.add(sep);
-        card.add(Box.createVerticalStrut(12));
-        card.add(infoRow);
+        card.add(Box.createVerticalStrut(4));
+        card.add(infoBlock("KOMPETISI", team.getCompetition().getName()));
         card.add(Box.createVerticalStrut(10));
-        card.add(infoRow2);
-        if (!team.getCompetition().getTags().isEmpty()) {
+        card.add(infoRow);
+        if (!allTags.isEmpty()) {
             card.add(Box.createVerticalStrut(10));
             card.add(tagsRow);
         }

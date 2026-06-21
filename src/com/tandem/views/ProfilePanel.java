@@ -43,10 +43,18 @@ public class ProfilePanel extends JPanel {
     private javax.swing.JScrollPane mainScrollPane;
     // End of variables declaration
 
+    private static class FitPanel extends JPanel implements Scrollable {
+        @Override public Dimension getPreferredScrollableViewportSize() { return getPreferredSize(); }
+        @Override public int getScrollableUnitIncrement(java.awt.Rectangle r, int o, int d) { return 20; }
+        @Override public int getScrollableBlockIncrement(java.awt.Rectangle r, int o, int d) { return r.height; }
+        @Override public boolean getScrollableTracksViewportWidth() { return true; }
+        @Override public boolean getScrollableTracksViewportHeight() { return false; }
+    }
+
     private JPanel buildContent() {
         User user = Session.getCurrentUser();
 
-        JPanel p = new JPanel();
+        FitPanel p = new FitPanel();
         p.setLayout(new BoxLayout(p, BoxLayout.Y_AXIS));
         p.setBackground(UITheme.BG);
         p.setBorder(BorderFactory.createEmptyBorder(28, UITheme.PAD, 32, UITheme.PAD));
@@ -222,7 +230,7 @@ public class ProfilePanel extends JPanel {
         lbl.setFont(UITheme.F_LABEL);
         lbl.setForeground(UITheme.GRAY);
         lbl.setAlignmentX(Component.LEFT_ALIGNMENT);
-        JLabel val = new JLabel("<html><body style='width:360px'>" + value + "</body></html>");
+        JLabel val = new JLabel("<html><body style='width:270px'>" + value + "</body></html>");
         val.setFont(UITheme.F_BODY);
         val.setForeground(UITheme.TEXT);
         val.setAlignmentX(Component.LEFT_ALIGNMENT);

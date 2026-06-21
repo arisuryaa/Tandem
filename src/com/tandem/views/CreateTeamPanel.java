@@ -21,8 +21,9 @@ public class CreateTeamPanel extends JPanel {
     private JPanel compSelectPanel;
     private JPanel compCreatePanel;
     private JComboBox<String> existingCompBox;
-    private JTextField compNameField, compDeadlineField;
-    private JTextField compEventStartField, compEventEndField;
+    private JTextField compNameField;
+    private JComboBox<String> compEventStartDayBox, compEventStartMonthBox, compEventStartYearBox;
+    private JComboBox<String> compEventEndDayBox,   compEventEndMonthBox,   compEventEndYearBox;
     private JComboBox<String> compCategoryBox;
     private JTextField compTagsField;
 
@@ -247,14 +248,13 @@ public class CreateTeamPanel extends JPanel {
 
         compNameField = styledField();
 
-        compEventStartField = styledField();
-        compEventStartField.setText("YYYY-MM-DD");
+        compEventStartDayBox   = makeDayBox();
+        compEventStartMonthBox = makeMonthBox();
+        compEventStartYearBox  = makeYearBox();
 
-        compEventEndField = styledField();
-        compEventEndField.setText("YYYY-MM-DD");
-
-        compDeadlineField = styledField();
-        compDeadlineField.setText("YYYY-MM-DD");
+        compEventEndDayBox   = makeDayBox();
+        compEventEndMonthBox = makeMonthBox();
+        compEventEndYearBox  = makeYearBox();
 
         String[] categories = {"Hackathon", "Design", "PKM", "Business", "Data Science", "Other"};
         compCategoryBox = new JComboBox<>(categories);
@@ -266,19 +266,49 @@ public class CreateTeamPanel extends JPanel {
         compTagsField = styledField();
         compTagsField.setText("e.g. Informatika, Manajemen, DKV");
 
+        JPanel startRow = makeDateRow(compEventStartDayBox, compEventStartMonthBox, compEventStartYearBox);
+        JPanel endRow   = makeDateRow(compEventEndDayBox,   compEventEndMonthBox,   compEventEndYearBox);
+
         panel.add(smallGray("Nama Kompetisi")); panel.add(Box.createVerticalStrut(6)); panel.add(compNameField);
         panel.add(Box.createVerticalStrut(12));
         panel.add(smallGray("Kategori")); panel.add(Box.createVerticalStrut(6)); panel.add(compCategoryBox);
         panel.add(Box.createVerticalStrut(12));
-        panel.add(smallGray("Tanggal Mulai Event")); panel.add(Box.createVerticalStrut(6)); panel.add(compEventStartField);
+        panel.add(smallGray("Tanggal Mulai Event")); panel.add(Box.createVerticalStrut(6)); panel.add(startRow);
         panel.add(Box.createVerticalStrut(12));
-        panel.add(smallGray("Tanggal Selesai Event")); panel.add(Box.createVerticalStrut(6)); panel.add(compEventEndField);
-        panel.add(Box.createVerticalStrut(12));
-        panel.add(smallGray("Deadline Submission (opsional)")); panel.add(Box.createVerticalStrut(6)); panel.add(compDeadlineField);
+        panel.add(smallGray("Tanggal Selesai Event")); panel.add(Box.createVerticalStrut(6)); panel.add(endRow);
         panel.add(Box.createVerticalStrut(12));
         panel.add(smallGray("Tags Jurusan (pisah dengan koma)")); panel.add(Box.createVerticalStrut(6)); panel.add(compTagsField);
 
         return panel;
+    }
+
+    private JComboBox<String> makeDayBox() {
+        String[] days = new String[31];
+        for (int i = 0; i < 31; i++) days[i] = String.format("%02d", i + 1);
+        JComboBox<String> b = new JComboBox<>(days);
+        b.setFont(UITheme.F_BODY); b.setBackground(UITheme.CARD); return b;
+    }
+
+    private JComboBox<String> makeMonthBox() {
+        JComboBox<String> b = new JComboBox<>(new String[]{
+            "Jan","Feb","Mar","Apr","Mei","Jun","Jul","Agu","Sep","Okt","Nov","Des"});
+        b.setFont(UITheme.F_BODY); b.setBackground(UITheme.CARD); return b;
+    }
+
+    private JComboBox<String> makeYearBox() {
+        JComboBox<String> b = new JComboBox<>(new String[]{"2025","2026","2027","2028","2029","2030"});
+        b.setSelectedItem("2026");
+        b.setFont(UITheme.F_BODY); b.setBackground(UITheme.CARD); return b;
+    }
+
+    private JPanel makeDateRow(JComboBox<String> day, JComboBox<String> month, JComboBox<String> year) {
+        JPanel row = new JPanel(new GridLayout(1, 3, 8, 0));
+        row.setOpaque(false);
+        row.setPreferredSize(new Dimension(0, 44));
+        row.setMaximumSize(new Dimension(Integer.MAX_VALUE, 44));
+        row.setAlignmentX(Component.LEFT_ALIGNMENT);
+        row.add(day); row.add(month); row.add(year);
+        return row;
     }
 
     private void addSlotField() {
@@ -320,21 +350,21 @@ public class CreateTeamPanel extends JPanel {
             int idx = existingCompBox.getSelectedIndex();
             comp = allComps.get(idx);
         } else {
-            String cName       = compNameField.getText().trim();
-            String cEventStart = compEventStartField.getText().trim();
-            String cEventEnd   = compEventEndField.getText().trim();
-            String cDead       = compDeadlineField.getText().trim();
-            String cCat        = (String) compCategoryBox.getSelectedItem();
+            String cName = compNameField.getText().trim();
+            String cCat  = (String) compCategoryBox.getSelectedItem();
 
             if (cName.isEmpty()) {
                 warn("Nama kompetisi wajib diisi!"); return;
             }
-            if (cEventStart.isEmpty() || cEventStart.equals("YYYY-MM-DD")) {
-                warn("Tanggal mulai event wajib diisi!"); return;
-            }
-            if (cEventEnd.isEmpty() || cEventEnd.equals("YYYY-MM-DD")) {
-                warn("Tanggal selesai event wajib diisi!"); return;
-            }
+
+            String cEventStart = String.format("%s-%02d-%02d",
+                compEventStartYearBox.getSelectedItem(),
+                compEventStartMonthBox.getSelectedIndex() + 1,
+                compEventStartDayBox.getSelectedIndex() + 1);
+            String cEventEnd = String.format("%s-%02d-%02d",
+                compEventEndYearBox.getSelectedItem(),
+                compEventEndMonthBox.getSelectedIndex() + 1,
+                compEventEndDayBox.getSelectedIndex() + 1);
 
             ArrayList<String> tags = new ArrayList<>();
             for (String tag : compTagsField.getText().split(",")) {
@@ -343,11 +373,9 @@ public class CreateTeamPanel extends JPanel {
             }
             if (tags.isEmpty()) tags.add("Semua");
 
-            String submissionDeadline = (cDead.isEmpty() || cDead.equals("YYYY-MM-DD")) ? cEventStart : cDead;
-
             comp = new Competition(
                     java.util.UUID.randomUUID().toString().substring(0, 8).toUpperCase(),
-                    cName, cCat, submissionDeadline, cEventStart, cEventEnd, slots.size() + 1, tags);
+                    cName, cCat, "", cEventStart, cEventEnd, slots.size() + 1, tags);
         }
 
         Team newTeam = tc.createTeam(leader, tName, desc, comp, slots);
