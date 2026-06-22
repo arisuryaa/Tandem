@@ -103,6 +103,12 @@ public class TeamDetailPanel extends JPanel {
         p.add(teamName);
         p.add(Box.createVerticalStrut(16));
         p.add(buildInfoCard());
+        if (isLeader) {
+            p.add(Box.createVerticalStrut(12));
+            RoundedButton editTeamBtn = new RoundedButton("Edit Tim", UITheme.BADGE, UITheme.TEXT);
+            editTeamBtn.addActionListener(e -> frame.showEditTeam(team));
+            p.add(editTeamBtn);
+        }
         p.add(Box.createVerticalStrut(28));
 
         // ── Team Structure ────────────────────────────────────────────────────

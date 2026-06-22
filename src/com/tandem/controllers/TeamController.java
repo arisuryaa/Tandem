@@ -86,4 +86,13 @@ public class TeamController {
         request.reject(reason);
         request.getTargetTeam().removePendingRequest(request);
     }
+
+    public void kickMember(Team team, User member) {
+        team.removeMember(member);
+        store.persistToFile();
+    }
+
+    public void updateSlots(Team team, ArrayList<String> newSlots) {
+        team.setOpenSlots(newSlots);
+    }
 }

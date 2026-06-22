@@ -61,6 +61,17 @@ public class Team implements Serializable {
     public ArrayList<String> getOpenSlots()            { return new ArrayList<>(openSlots); }
     public ArrayList<JoinRequest> getPendingRequests() { return new ArrayList<>(pendingRequests); }
 
+    public void removeMember(User user) {
+        members.remove(user);
+        if (status == TeamStatus.FULL) status = TeamStatus.OPEN;
+    }
+
+    public void setOpenSlots(ArrayList<String> slots) {
+        this.openSlots = new ArrayList<>(slots);
+        if (openSlots.isEmpty() && members.size() > 1) status = TeamStatus.FULL;
+        else status = TeamStatus.OPEN;
+    }
+
     public void setTeamName(String teamName)             { this.teamName = teamName; }
     public void setDescription(String description)       { this.description = description; }
     public void setRegistrationDeadline(String deadline) { this.registrationDeadline = deadline; }

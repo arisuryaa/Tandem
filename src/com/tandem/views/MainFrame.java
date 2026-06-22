@@ -25,6 +25,7 @@ public class MainFrame extends JFrame {
     private static final String TEAM       = "teamDetail";
     private static final String CREATE     = "createTeam";
     private static final String EDIT_PROF  = "editProfile";
+    private static final String EDIT_TEAM  = "editTeam";
 
     private static final String[] NAV_LABELS = {"Dashboard", "Find Teams", "Alerts", "Profile"};
 
@@ -129,6 +130,12 @@ public class MainFrame extends JFrame {
         EditProfilePanel epp = new EditProfilePanel(this);
         cards.add(epp, EDIT_PROF);
         cardLayout.show(cards, EDIT_PROF);
+    }
+
+    public void showEditTeam(Team team) {
+        EditTeamPanel etp = new EditTeamPanel(this, team);
+        cards.add(etp, EDIT_TEAM);
+        cardLayout.show(cards, EDIT_TEAM);
     }
 
     // ── Header ────────────────────────────────────────────────────────────────
