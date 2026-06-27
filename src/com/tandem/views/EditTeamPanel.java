@@ -132,7 +132,12 @@ public class EditTeamPanel extends JPanel {
 
         // ── Competition Details ───────────────────────────────────────────────
         compNameField = styledField();
-        compNameField.setText(team.getCompetition().getName());
+        Competition competition = team.getCompetition();
+        if (competition != null) {
+            compNameField.setText(competition.getName());
+        } else {
+            compNameField.setText("(No competition)");
+        }
         compNameField.setEditable(false);
 
         String[] compDays = new String[31];
@@ -162,12 +167,16 @@ public class EditTeamPanel extends JPanel {
 
         String eventStart = team.getCompetition().getEventStartDate();
         if (eventStart != null && !eventStart.isEmpty()) {
-            try {
-                String[] parts = eventStart.split("-");
-                compEventStartYearBox.setSelectedItem(parts[0]);
-                compEventStartMonthBox.setSelectedIndex(Integer.parseInt(parts[1]) - 1);
-                compEventStartDayBox.setSelectedIndex(Integer.parseInt(parts[2]) - 1);
-            } catch (Exception ignored) {}
+            String[] parts = eventStart.split("-");
+            if (parts.length == 3) {
+                try {
+                    compEventStartYearBox.setSelectedItem(parts[0]);
+                    compEventStartMonthBox.setSelectedIndex(Integer.parseInt(parts[1]) - 1);
+                    compEventStartDayBox.setSelectedIndex(Integer.parseInt(parts[2]) - 1);
+                } catch (Exception e) {
+                    // Silently default to first option if format is invalid
+                }
+            }
         }
 
         compStartDateRow = new JPanel(new GridLayout(1, 3, 8, 0));
@@ -197,12 +206,16 @@ public class EditTeamPanel extends JPanel {
 
         String eventEnd = team.getCompetition().getEventEndDate();
         if (eventEnd != null && !eventEnd.isEmpty()) {
-            try {
-                String[] parts = eventEnd.split("-");
-                compEventEndYearBox.setSelectedItem(parts[0]);
-                compEventEndMonthBox.setSelectedIndex(Integer.parseInt(parts[1]) - 1);
-                compEventEndDayBox.setSelectedIndex(Integer.parseInt(parts[2]) - 1);
-            } catch (Exception ignored) {}
+            String[] parts = eventEnd.split("-");
+            if (parts.length == 3) {
+                try {
+                    compEventEndYearBox.setSelectedItem(parts[0]);
+                    compEventEndMonthBox.setSelectedIndex(Integer.parseInt(parts[1]) - 1);
+                    compEventEndDayBox.setSelectedIndex(Integer.parseInt(parts[2]) - 1);
+                } catch (Exception e) {
+                    // Silently default to first option if format is invalid
+                }
+            }
         }
 
         compEndDateRow = new JPanel(new GridLayout(1, 3, 8, 0));
@@ -217,15 +230,9 @@ public class EditTeamPanel extends JPanel {
         // Apply lock if team has members
         if (isCompetitionLocked()) {
             compNameField.setEditable(false);
-            compEventStartDayBox.setEnabled(false);
-            compEventStartMonthBox.setEnabled(false);
-            compEventStartYearBox.setEnabled(false);
-            compEventEndDayBox.setEnabled(false);
-            compEventEndMonthBox.setEnabled(false);
-            compEventEndYearBox.setEnabled(false);
 
-            // Add focus listeners to show warning
-            FocusListener lockWarning = new FocusAdapter() {
+            // Add focus listener for text field (which can receive focus when not editable)
+            FocusListener lockWarningTextField = new FocusAdapter() {
                 @Override public void focusGained(FocusEvent e) {
                     String msg = "Field ini tidak bisa diubah karena sudah ada anggota tim yang bergabung. " +
                                  "Jika ingin mengubah, silakan diskusikan dengan anggota tim terlebih dahulu.";
@@ -233,14 +240,22 @@ public class EditTeamPanel extends JPanel {
                     e.getComponent().transferFocus();
                 }
             };
+            compNameField.addFocusListener(lockWarningTextField);
 
-            compNameField.addFocusListener(lockWarning);
-            compEventStartDayBox.addFocusListener(lockWarning);
-            compEventStartMonthBox.addFocusListener(lockWarning);
-            compEventStartYearBox.addFocusListener(lockWarning);
-            compEventEndDayBox.addFocusListener(lockWarning);
-            compEventEndMonthBox.addFocusListener(lockWarning);
-            compEventEndYearBox.addFocusListener(lockWarning);
+            // For combo boxes, use ActionListener instead of disabled + focus listener
+            // Disabled components cannot receive focus, so focusGained() never fires
+            ActionListener lockWarningComboBox = e -> {
+                String msg = "Field ini tidak bisa diubah karena sudah ada anggota tim yang bergabung. " +
+                             "Jika ingin mengubah, silakan diskusikan dengan anggota tim terlebih dahulu.";
+                JOptionPane.showMessageDialog(EditTeamPanel.this, msg, "Tidak Bisa Diubah", JOptionPane.INFORMATION_MESSAGE);
+            };
+
+            compEventStartDayBox.addActionListener(lockWarningComboBox);
+            compEventStartMonthBox.addActionListener(lockWarningComboBox);
+            compEventStartYearBox.addActionListener(lockWarningComboBox);
+            compEventEndDayBox.addActionListener(lockWarningComboBox);
+            compEventEndMonthBox.addActionListener(lockWarningComboBox);
+            compEventEndYearBox.addActionListener(lockWarningComboBox);
         }
 
         // ── Slots ─────────────────────────────────────────────────────────────
@@ -605,6 +620,16 @@ public class EditTeamPanel extends JPanel {
     }
 
     private JPanel buildExpandableCompetitionSection(User user) {
+        if (user == null) {
+            JPanel emptySection = new JPanel();
+            emptySection.setOpaque(false);
+            JLabel empty = new JLabel("(User data unavailable)");
+            empty.setFont(UITheme.F_SMALL);
+            empty.setForeground(UITheme.HINT);
+            emptySection.add(empty);
+            return emptySection;
+        }
+
         ArrayList<Team> userTeams = tc.getAcceptedTeamsForUser(user);
         ArrayList<Team> otherTeams = new ArrayList<>();
         for (Team t : userTeams) {

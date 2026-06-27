@@ -78,6 +78,7 @@ public class TeamController {
 
     public ArrayList<Team> getAcceptedTeamsForUser(User user) {
         ArrayList<Team> result = new ArrayList<>();
+        if (user == null) return result;
         for (Team t : store.getAllTeams()) {
             if (t.isMember(user)) {
                 result.add(t);
