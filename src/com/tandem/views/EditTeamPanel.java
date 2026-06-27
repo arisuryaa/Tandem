@@ -27,6 +27,9 @@ public class EditTeamPanel extends JPanel {
     private JComboBox<String> compEventEndDayBox, compEventEndMonthBox, compEventEndYearBox;
     private JPanel compStartDateRow, compEndDateRow;
 
+    private JPanel pendingApplicantsPanel, acceptedMembersPanel;
+    private boolean pendingExpanded = true, membersExpanded = true;
+
     public EditTeamPanel(MainFrame frame, Team team) {
         this.frame = frame;
         this.team  = team;
@@ -345,6 +348,35 @@ public class EditTeamPanel extends JPanel {
             p.add(membersContainer);
         }
 
+        // ── Member Competition Load ───────────────────────────────────────
+        ArrayList<JoinRequest> pendingReqs = team.getPendingRequests();
+        if (!pendingReqs.isEmpty()) {
+            p.add(Box.createVerticalStrut(24));
+            p.add(sectionLabel("Permintaan Gabung"));
+            p.add(Box.createVerticalStrut(4));
+            p.add(smallGray("Kompetisi lain yang sedang diikuti calon anggota tim."));
+            p.add(Box.createVerticalStrut(12));
+            pendingApplicantsPanel = buildPendingApplicantsSection();
+            p.add(pendingApplicantsPanel);
+        }
+
+        ArrayList<User> nonLeaderMembers = new ArrayList<>();
+        for (User m : team.getMembers()) {
+            if (!m.getUserId().equals(team.getLeader().getUserId())) {
+                nonLeaderMembers.add(m);
+            }
+        }
+
+        if (!nonLeaderMembers.isEmpty()) {
+            p.add(Box.createVerticalStrut(24));
+            p.add(sectionLabel("Jadwal Anggota Tim"));
+            p.add(Box.createVerticalStrut(4));
+            p.add(smallGray("Kompetisi lain yang sedang diikuti anggota tim."));
+            p.add(Box.createVerticalStrut(12));
+            acceptedMembersPanel = buildAcceptedMembersSection();
+            p.add(acceptedMembersPanel);
+        }
+
         p.add(Box.createVerticalStrut(32));
         p.add(saveBtn);
 
@@ -547,6 +579,170 @@ public class EditTeamPanel extends JPanel {
 
     private boolean isCompetitionLocked() {
         return team.getMembers().size() > 1;
+    }
+
+    private String formatDateRange(String startDate, String endDate) {
+        if (startDate == null || startDate.isEmpty() || endDate == null || endDate.isEmpty()) {
+            return "";
+        }
+        try {
+            String[] startParts = startDate.split("-");
+            String[] endParts = endDate.split("-");
+            int startDay = Integer.parseInt(startParts[2]);
+            int startMonth = Integer.parseInt(startParts[1]);
+            int endDay = Integer.parseInt(endParts[2]);
+            int endMonth = Integer.parseInt(endParts[1]);
+
+            String[] monthNames = {"Januari","Februari","Maret","April","Mei","Juni",
+                                  "Juli","Agustus","September","Oktober","November","Desember"};
+
+            return String.format("%d %s - %d %s",
+                startDay, monthNames[startMonth - 1],
+                endDay, monthNames[endMonth - 1]);
+        } catch (Exception e) {
+            return startDate + " - " + endDate;
+        }
+    }
+
+    private JPanel buildExpandableCompetitionSection(User user) {
+        ArrayList<Team> userTeams = tc.getAcceptedTeamsForUser(user);
+        ArrayList<Team> otherTeams = new ArrayList<>();
+        for (Team t : userTeams) {
+            if (!t.getTeamId().equals(team.getTeamId())) {
+                otherTeams.add(t);
+            }
+        }
+
+        JPanel section = new JPanel();
+        section.setLayout(new BoxLayout(section, BoxLayout.Y_AXIS));
+        section.setOpaque(false);
+        section.setAlignmentX(Component.LEFT_ALIGNMENT);
+
+        if (otherTeams.isEmpty()) {
+            JLabel noCompetitions = new JLabel("(Tidak mengikuti kompetisi lain)");
+            noCompetitions.setFont(UITheme.F_SMALL);
+            noCompetitions.setForeground(UITheme.HINT);
+            noCompetitions.setAlignmentX(Component.LEFT_ALIGNMENT);
+            section.add(noCompetitions);
+        } else {
+            for (Team t : otherTeams) {
+                Competition comp = t.getCompetition();
+                String dateRange = formatDateRange(comp.getEventStartDate(), comp.getEventEndDate());
+
+                JPanel compRow = new JPanel();
+                compRow.setLayout(new BoxLayout(compRow, BoxLayout.Y_AXIS));
+                compRow.setOpaque(false);
+                compRow.setAlignmentX(Component.LEFT_ALIGNMENT);
+                compRow.setBorder(BorderFactory.createEmptyBorder(4, 8, 4, 0));
+
+                JLabel compName = new JLabel("• " + comp.getName());
+                compName.setFont(UITheme.F_SMALL);
+                compName.setForeground(UITheme.TEXT);
+                compName.setAlignmentX(Component.LEFT_ALIGNMENT);
+
+                JLabel compDate = new JLabel("  📅 " + dateRange);
+                compDate.setFont(UITheme.F_SMALL);
+                compDate.setForeground(UITheme.GRAY);
+                compDate.setAlignmentX(Component.LEFT_ALIGNMENT);
+
+                compRow.add(compName);
+                compRow.add(compDate);
+                section.add(compRow);
+                section.add(Box.createVerticalStrut(4));
+            }
+        }
+
+        return section;
+    }
+
+    private JPanel buildPendingApplicantsSection() {
+        ArrayList<JoinRequest> pending = team.getPendingRequests();
+
+        JPanel section = new JPanel();
+        section.setLayout(new BoxLayout(section, BoxLayout.Y_AXIS));
+        section.setOpaque(false);
+        section.setAlignmentX(Component.LEFT_ALIGNMENT);
+
+        if (pending.isEmpty()) {
+            JLabel empty = new JLabel("Belum ada permintaan gabung.");
+            empty.setFont(UITheme.F_SMALL);
+            empty.setForeground(UITheme.HINT);
+            empty.setAlignmentX(Component.LEFT_ALIGNMENT);
+            section.add(empty);
+        } else {
+            for (JoinRequest req : pending) {
+                User requester = req.getRequester();
+
+                JPanel userRow = new JPanel();
+                userRow.setLayout(new BoxLayout(userRow, BoxLayout.Y_AXIS));
+                userRow.setOpaque(false);
+                userRow.setAlignmentX(Component.LEFT_ALIGNMENT);
+                userRow.setBorder(BorderFactory.createEmptyBorder(8, 0, 8, 0));
+
+                JLabel userName = new JLabel(requester.getName());
+                userName.setFont(new Font("SansSerif", Font.BOLD, 12));
+                userName.setForeground(UITheme.TEXT);
+                userName.setAlignmentX(Component.LEFT_ALIGNMENT);
+
+                JPanel compSection = buildExpandableCompetitionSection(requester);
+
+                userRow.add(userName);
+                userRow.add(Box.createVerticalStrut(4));
+                userRow.add(compSection);
+
+                section.add(userRow);
+                section.add(Box.createVerticalStrut(12));
+            }
+        }
+
+        return section;
+    }
+
+    private JPanel buildAcceptedMembersSection() {
+        ArrayList<User> members = team.getMembers();
+        ArrayList<User> nonLeaderMembers = new ArrayList<>();
+        for (User m : members) {
+            if (!m.getUserId().equals(team.getLeader().getUserId())) {
+                nonLeaderMembers.add(m);
+            }
+        }
+
+        JPanel section = new JPanel();
+        section.setLayout(new BoxLayout(section, BoxLayout.Y_AXIS));
+        section.setOpaque(false);
+        section.setAlignmentX(Component.LEFT_ALIGNMENT);
+
+        if (nonLeaderMembers.isEmpty()) {
+            JLabel empty = new JLabel("Belum ada anggota bergabung (selain leader).");
+            empty.setFont(UITheme.F_SMALL);
+            empty.setForeground(UITheme.HINT);
+            empty.setAlignmentX(Component.LEFT_ALIGNMENT);
+            section.add(empty);
+        } else {
+            for (User member : nonLeaderMembers) {
+                JPanel userRow = new JPanel();
+                userRow.setLayout(new BoxLayout(userRow, BoxLayout.Y_AXIS));
+                userRow.setOpaque(false);
+                userRow.setAlignmentX(Component.LEFT_ALIGNMENT);
+                userRow.setBorder(BorderFactory.createEmptyBorder(8, 0, 8, 0));
+
+                JLabel userName = new JLabel(member.getName());
+                userName.setFont(new Font("SansSerif", Font.BOLD, 12));
+                userName.setForeground(UITheme.TEXT);
+                userName.setAlignmentX(Component.LEFT_ALIGNMENT);
+
+                JPanel compSection = buildExpandableCompetitionSection(member);
+
+                userRow.add(userName);
+                userRow.add(Box.createVerticalStrut(4));
+                userRow.add(compSection);
+
+                section.add(userRow);
+                section.add(Box.createVerticalStrut(12));
+            }
+        }
+
+        return section;
     }
 
     private static class FitPanel extends JPanel implements Scrollable {
