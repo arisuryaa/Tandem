@@ -153,17 +153,14 @@ public class EditTeamPanel extends JPanel {
         compEventStartDayBox = new JComboBox<>(compDays);
         compEventStartDayBox.setFont(UITheme.F_BODY);
         compEventStartDayBox.setBackground(UITheme.CARD);
-        compEventStartDayBox.setEnabled(false);
 
         compEventStartMonthBox = new JComboBox<>(compMonths);
         compEventStartMonthBox.setFont(UITheme.F_BODY);
         compEventStartMonthBox.setBackground(UITheme.CARD);
-        compEventStartMonthBox.setEnabled(false);
 
         compEventStartYearBox = new JComboBox<>(compYears);
         compEventStartYearBox.setFont(UITheme.F_BODY);
         compEventStartYearBox.setBackground(UITheme.CARD);
-        compEventStartYearBox.setEnabled(false);
 
         String eventStart = team.getCompetition().getEventStartDate();
         if (eventStart != null && !eventStart.isEmpty()) {
@@ -192,17 +189,14 @@ public class EditTeamPanel extends JPanel {
         compEventEndDayBox = new JComboBox<>(compDays);
         compEventEndDayBox.setFont(UITheme.F_BODY);
         compEventEndDayBox.setBackground(UITheme.CARD);
-        compEventEndDayBox.setEnabled(false);
 
         compEventEndMonthBox = new JComboBox<>(compMonths);
         compEventEndMonthBox.setFont(UITheme.F_BODY);
         compEventEndMonthBox.setBackground(UITheme.CARD);
-        compEventEndMonthBox.setEnabled(false);
 
         compEventEndYearBox = new JComboBox<>(compYears);
         compEventEndYearBox.setFont(UITheme.F_BODY);
         compEventEndYearBox.setBackground(UITheme.CARD);
-        compEventEndYearBox.setEnabled(false);
 
         String eventEnd = team.getCompetition().getEventEndDate();
         if (eventEnd != null && !eventEnd.isEmpty()) {
@@ -241,21 +235,6 @@ public class EditTeamPanel extends JPanel {
                 }
             };
             compNameField.addFocusListener(lockWarningTextField);
-
-            // For combo boxes, use ActionListener instead of disabled + focus listener
-            // Disabled components cannot receive focus, so focusGained() never fires
-            ActionListener lockWarningComboBox = e -> {
-                String msg = "Field ini tidak bisa diubah karena sudah ada anggota tim yang bergabung. " +
-                             "Jika ingin mengubah, silakan diskusikan dengan anggota tim terlebih dahulu.";
-                JOptionPane.showMessageDialog(EditTeamPanel.this, msg, "Tidak Bisa Diubah", JOptionPane.INFORMATION_MESSAGE);
-            };
-
-            compEventStartDayBox.addActionListener(lockWarningComboBox);
-            compEventStartMonthBox.addActionListener(lockWarningComboBox);
-            compEventStartYearBox.addActionListener(lockWarningComboBox);
-            compEventEndDayBox.addActionListener(lockWarningComboBox);
-            compEventEndMonthBox.addActionListener(lockWarningComboBox);
-            compEventEndYearBox.addActionListener(lockWarningComboBox);
         }
 
         // ── Slots ─────────────────────────────────────────────────────────────
