@@ -166,6 +166,55 @@ public class AlertsPanel extends JPanel {
         teamLabel.setForeground(UITheme.GRAY);
         teamLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
 
+        // ── Applicant's other competitions (member load) ──────────────────────
+        ArrayList<Team> applicantTeams = tc.getAcceptedTeamsForUser(applicant);
+        ArrayList<Team> otherTeams = new ArrayList<>();
+        for (Team t : applicantTeams) {
+            if (!t.getTeamId().equals(jr.getTargetTeam().getTeamId())) {
+                otherTeams.add(t);
+            }
+        }
+
+        JPanel compSection = new JPanel();
+        compSection.setLayout(new BoxLayout(compSection, BoxLayout.Y_AXIS));
+        compSection.setOpaque(false);
+        compSection.setAlignmentX(Component.LEFT_ALIGNMENT);
+
+        if (!otherTeams.isEmpty()) {
+            JLabel compHeaderLabel = new JLabel("📅 Kompetisi lain yang sedang diikuti:");
+            compHeaderLabel.setFont(UITheme.F_LABEL);
+            compHeaderLabel.setForeground(UITheme.GRAY);
+            compHeaderLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
+            compSection.add(compHeaderLabel);
+            compSection.add(Box.createVerticalStrut(4));
+
+            for (Team t : otherTeams) {
+                Competition comp = t.getCompetition();
+                String dateRange = formatDateRange(comp.getEventStartDate(), comp.getEventEndDate());
+
+                JPanel compRow = new JPanel();
+                compRow.setLayout(new BoxLayout(compRow, BoxLayout.Y_AXIS));
+                compRow.setOpaque(false);
+                compRow.setAlignmentX(Component.LEFT_ALIGNMENT);
+                compRow.setBorder(BorderFactory.createEmptyBorder(2, 8, 2, 0));
+
+                JLabel compName = new JLabel("• " + comp.getName());
+                compName.setFont(UITheme.F_SMALL);
+                compName.setForeground(UITheme.TEXT);
+                compName.setAlignmentX(Component.LEFT_ALIGNMENT);
+
+                JLabel compDate = new JLabel("  " + dateRange);
+                compDate.setFont(UITheme.F_SMALL);
+                compDate.setForeground(UITheme.GRAY);
+                compDate.setAlignmentX(Component.LEFT_ALIGNMENT);
+
+                compRow.add(compName);
+                compRow.add(compDate);
+                compSection.add(compRow);
+                compSection.add(Box.createVerticalStrut(2));
+            }
+        }
+
         // ── Applicant bio ──────────────────────────────────────────────────────
         String bio = applicant.getBio().isEmpty() ? "(tidak ada bio)" : applicant.getBio();
         JLabel bioLabel = new JLabel("<html><body style='width:340px'><i>\"" + bio + "\"</i></body></html>");
@@ -227,6 +276,10 @@ public class AlertsPanel extends JPanel {
         card.add(headerRow);
         card.add(Box.createVerticalStrut(10));
         card.add(teamLabel);
+        if (!otherTeams.isEmpty()) {
+            card.add(Box.createVerticalStrut(8));
+            card.add(compSection);
+        }
         card.add(Box.createVerticalStrut(10));
         card.add(sep1);
         card.add(Box.createVerticalStrut(10));
@@ -397,6 +450,29 @@ public class AlertsPanel extends JPanel {
         l.setForeground(UITheme.GRAY);
         l.setAlignmentX(Component.LEFT_ALIGNMENT);
         return l;
+    }
+
+    private String formatDateRange(String startDate, String endDate) {
+        if (startDate == null || startDate.isEmpty() || endDate == null || endDate.isEmpty()) {
+            return "";
+        }
+        try {
+            String[] startParts = startDate.split("-");
+            String[] endParts = endDate.split("-");
+            int startDay = Integer.parseInt(startParts[2]);
+            int startMonth = Integer.parseInt(startParts[1]);
+            int endDay = Integer.parseInt(endParts[2]);
+            int endMonth = Integer.parseInt(endParts[1]);
+
+            String[] monthNames = {"Januari","Februari","Maret","April","Mei","Juni",
+                                  "Juli","Agustus","September","Oktober","November","Desember"};
+
+            return String.format("%d %s - %d %s",
+                startDay, monthNames[startMonth - 1],
+                endDay, monthNames[endMonth - 1]);
+        } catch (Exception e) {
+            return startDate + " - " + endDate;
+        }
     }
 
     private void refreshPanel() {
