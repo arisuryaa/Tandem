@@ -76,6 +76,16 @@ public class TeamController {
         return result;
     }
 
+    public ArrayList<Team> getAcceptedTeamsForUser(User user) {
+        ArrayList<Team> result = new ArrayList<>();
+        for (Team t : store.getAllTeams()) {
+            if (t.isMember(user)) {
+                result.add(t);
+            }
+        }
+        return result;
+    }
+
     public void approveRequest(JoinRequest request) {
         request.approve();
         request.getTargetTeam().addMember(request.getRequester());
