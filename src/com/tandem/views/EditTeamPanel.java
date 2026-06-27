@@ -22,6 +22,11 @@ public class EditTeamPanel extends JPanel {
     private JPanel slotsContainer;
     private final ArrayList<String> currentSlots;
 
+    private JTextField compNameField;
+    private JComboBox<String> compEventStartDayBox, compEventStartMonthBox, compEventStartYearBox;
+    private JComboBox<String> compEventEndDayBox, compEventEndMonthBox, compEventEndYearBox;
+    private JPanel compStartDateRow, compEndDateRow;
+
     public EditTeamPanel(MainFrame frame, Team team) {
         this.frame = frame;
         this.team  = team;
@@ -122,6 +127,90 @@ public class EditTeamPanel extends JPanel {
             revalidate(); repaint();
         });
 
+        // ── Competition Details ───────────────────────────────────────────────
+        compNameField = styledField();
+        compNameField.setText(team.getCompetition().getName());
+        compNameField.setEditable(false);
+
+        String[] compDays = new String[31];
+        for (int i = 0; i < 31; i++) compDays[i] = String.format("%02d", i + 1);
+
+        String[] compMonths = new String[]{
+            "Januari","Februari","Maret","April","Mei","Juni",
+            "Juli","Agustus","September","Oktober","November","Desember"};
+
+        String[] compYears = new String[]{"2025","2026","2027","2028","2029","2030"};
+
+        // Event start date
+        compEventStartDayBox = new JComboBox<>(compDays);
+        compEventStartDayBox.setFont(UITheme.F_BODY);
+        compEventStartDayBox.setBackground(UITheme.CARD);
+        compEventStartDayBox.setEnabled(false);
+
+        compEventStartMonthBox = new JComboBox<>(compMonths);
+        compEventStartMonthBox.setFont(UITheme.F_BODY);
+        compEventStartMonthBox.setBackground(UITheme.CARD);
+        compEventStartMonthBox.setEnabled(false);
+
+        compEventStartYearBox = new JComboBox<>(compYears);
+        compEventStartYearBox.setFont(UITheme.F_BODY);
+        compEventStartYearBox.setBackground(UITheme.CARD);
+        compEventStartYearBox.setEnabled(false);
+
+        String eventStart = team.getCompetition().getEventStartDate();
+        if (eventStart != null && !eventStart.isEmpty()) {
+            try {
+                String[] parts = eventStart.split("-");
+                compEventStartYearBox.setSelectedItem(parts[0]);
+                compEventStartMonthBox.setSelectedIndex(Integer.parseInt(parts[1]) - 1);
+                compEventStartDayBox.setSelectedIndex(Integer.parseInt(parts[2]) - 1);
+            } catch (Exception ignored) {}
+        }
+
+        compStartDateRow = new JPanel(new GridLayout(1, 3, 8, 0));
+        compStartDateRow.setOpaque(false);
+        compStartDateRow.setPreferredSize(new Dimension(0, 44));
+        compStartDateRow.setMaximumSize(new Dimension(Integer.MAX_VALUE, 44));
+        compStartDateRow.setAlignmentX(Component.LEFT_ALIGNMENT);
+        compStartDateRow.add(compEventStartDayBox);
+        compStartDateRow.add(compEventStartMonthBox);
+        compStartDateRow.add(compEventStartYearBox);
+
+        // Event end date
+        compEventEndDayBox = new JComboBox<>(compDays);
+        compEventEndDayBox.setFont(UITheme.F_BODY);
+        compEventEndDayBox.setBackground(UITheme.CARD);
+        compEventEndDayBox.setEnabled(false);
+
+        compEventEndMonthBox = new JComboBox<>(compMonths);
+        compEventEndMonthBox.setFont(UITheme.F_BODY);
+        compEventEndMonthBox.setBackground(UITheme.CARD);
+        compEventEndMonthBox.setEnabled(false);
+
+        compEventEndYearBox = new JComboBox<>(compYears);
+        compEventEndYearBox.setFont(UITheme.F_BODY);
+        compEventEndYearBox.setBackground(UITheme.CARD);
+        compEventEndYearBox.setEnabled(false);
+
+        String eventEnd = team.getCompetition().getEventEndDate();
+        if (eventEnd != null && !eventEnd.isEmpty()) {
+            try {
+                String[] parts = eventEnd.split("-");
+                compEventEndYearBox.setSelectedItem(parts[0]);
+                compEventEndMonthBox.setSelectedIndex(Integer.parseInt(parts[1]) - 1);
+                compEventEndDayBox.setSelectedIndex(Integer.parseInt(parts[2]) - 1);
+            } catch (Exception ignored) {}
+        }
+
+        compEndDateRow = new JPanel(new GridLayout(1, 3, 8, 0));
+        compEndDateRow.setOpaque(false);
+        compEndDateRow.setPreferredSize(new Dimension(0, 44));
+        compEndDateRow.setMaximumSize(new Dimension(Integer.MAX_VALUE, 44));
+        compEndDateRow.setAlignmentX(Component.LEFT_ALIGNMENT);
+        compEndDateRow.add(compEventEndDayBox);
+        compEndDateRow.add(compEventEndMonthBox);
+        compEndDateRow.add(compEventEndYearBox);
+
         // ── Slots ─────────────────────────────────────────────────────────────
         slotsContainer = new JPanel();
         slotsContainer.setLayout(new BoxLayout(slotsContainer, BoxLayout.Y_AXIS));
@@ -175,6 +264,23 @@ public class EditTeamPanel extends JPanel {
         p.add(Box.createVerticalStrut(8));
         p.add(descField);
         p.add(Box.createVerticalStrut(16));
+
+        p.add(sectionLabel("Kompetisi"));
+        p.add(Box.createVerticalStrut(4));
+        p.add(smallGray("Nama dan jadwal kompetisi (tidak bisa diubah jika sudah ada anggota)."));
+        p.add(Box.createVerticalStrut(8));
+        p.add(smallGray("Nama Kompetisi:"));
+        p.add(Box.createVerticalStrut(4));
+        p.add(compNameField);
+        p.add(Box.createVerticalStrut(8));
+        p.add(smallGray("Jadwal Lomba - Mulai:"));
+        p.add(Box.createVerticalStrut(4));
+        p.add(compStartDateRow);
+        p.add(Box.createVerticalStrut(8));
+        p.add(smallGray("Jadwal Lomba - Selesai:"));
+        p.add(Box.createVerticalStrut(4));
+        p.add(compEndDateRow);
+        p.add(Box.createVerticalStrut(24));
 
         p.add(sectionLabel("Deadline Pendaftaran Tim"));
         p.add(Box.createVerticalStrut(4));
