@@ -211,6 +211,35 @@ public class EditTeamPanel extends JPanel {
         compEndDateRow.add(compEventEndMonthBox);
         compEndDateRow.add(compEventEndYearBox);
 
+        // Apply lock if team has members
+        if (isCompetitionLocked()) {
+            compNameField.setEditable(false);
+            compEventStartDayBox.setEnabled(false);
+            compEventStartMonthBox.setEnabled(false);
+            compEventStartYearBox.setEnabled(false);
+            compEventEndDayBox.setEnabled(false);
+            compEventEndMonthBox.setEnabled(false);
+            compEventEndYearBox.setEnabled(false);
+
+            // Add focus listeners to show warning
+            FocusListener lockWarning = new FocusAdapter() {
+                @Override public void focusGained(FocusEvent e) {
+                    String msg = "Field ini tidak bisa diubah karena sudah ada anggota tim yang bergabung. " +
+                                 "Jika ingin mengubah, silakan diskusikan dengan anggota tim terlebih dahulu.";
+                    JOptionPane.showMessageDialog(EditTeamPanel.this, msg, "Tidak Bisa Diubah", JOptionPane.INFORMATION_MESSAGE);
+                    e.getComponent().transferFocus();
+                }
+            };
+
+            compNameField.addFocusListener(lockWarning);
+            compEventStartDayBox.addFocusListener(lockWarning);
+            compEventStartMonthBox.addFocusListener(lockWarning);
+            compEventStartYearBox.addFocusListener(lockWarning);
+            compEventEndDayBox.addFocusListener(lockWarning);
+            compEventEndMonthBox.addFocusListener(lockWarning);
+            compEventEndYearBox.addFocusListener(lockWarning);
+        }
+
         // ── Slots ─────────────────────────────────────────────────────────────
         slotsContainer = new JPanel();
         slotsContainer.setLayout(new BoxLayout(slotsContainer, BoxLayout.Y_AXIS));
@@ -266,6 +295,14 @@ public class EditTeamPanel extends JPanel {
         p.add(Box.createVerticalStrut(16));
 
         p.add(sectionLabel("Kompetisi"));
+        if (isCompetitionLocked()) {
+            JLabel lockLabel = new JLabel("🔒 Terkunci (anggota sudah bergabung)");
+            lockLabel.setFont(UITheme.F_SMALL);
+            lockLabel.setForeground(new Color(220, 50, 50));
+            lockLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
+            p.add(lockLabel);
+            p.add(Box.createVerticalStrut(4));
+        }
         p.add(Box.createVerticalStrut(4));
         p.add(smallGray("Nama dan jadwal kompetisi (tidak bisa diubah jika sudah ada anggota)."));
         p.add(Box.createVerticalStrut(8));
@@ -506,6 +543,10 @@ public class EditTeamPanel extends JPanel {
         l.setForeground(UITheme.GRAY);
         l.setAlignmentX(Component.LEFT_ALIGNMENT);
         return l;
+    }
+
+    private boolean isCompetitionLocked() {
+        return team.getMembers().size() > 1;
     }
 
     private static class FitPanel extends JPanel implements Scrollable {
